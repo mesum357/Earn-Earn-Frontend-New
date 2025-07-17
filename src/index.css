@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* EasyEarn Lucky Draw Design System - Gamified UI with vibrant colors */
+
+@layer base {
+  :root {
+    /* Core brand colors - Lucky and vibrant */
+    --background: 0 0% 100%;
+    --foreground: 220 13% 18%;
+
+    /* Card system with soft elevation */
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 18%;
+
+    /* Primary - Lucky Green */
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 142 76% 50%;
+    --primary-dark: 142 76% 25%;
+
+    /* Secondary - Sunshine Yellow */
+    --secondary: 48 100% 67%;
+    --secondary-foreground: 220 13% 18%;
+    --secondary-light: 48 100% 80%;
+    --secondary-dark: 48 100% 50%;
+
+    /* Accent - Soft Blue for balance */
+    --accent: 213 94% 68%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Success - Emerald for wins */
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 98%;
+
+    /* Warning - Orange for attention */
+    --warning: 25 95% 53%;
+    --warning-foreground: 0 0% 98%;
+
+    /* Muted colors for subtle elements */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 142 76% 36%;
+
+    /* Gradients for gamified look */
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 50%));
+    --gradient-secondary: linear-gradient(135deg, hsl(48 100% 67%), hsl(48 100% 80%));
+    --gradient-hero: linear-gradient(135deg, hsl(142 76% 36%), hsl(213 94% 68%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 13% 97%));
+    --gradient-rainbow: linear-gradient(90deg, hsl(142 76% 50%), hsl(48 100% 67%), hsl(213 94% 68%), hsl(160 84% 39%));
+
+    /* Shadows for depth */
+    --shadow-soft: 0 2px 8px -2px hsl(220 13% 18% / 0.1);
+    --shadow-medium: 0 4px 16px -4px hsl(220 13% 18% / 0.15);
+    --shadow-large: 0 8px 32px -8px hsl(220 13% 18% / 0.2);
+    --shadow-colored: 0 8px 32px -8px hsl(142 76% 36% / 0.3);
+    --shadow-glow: 0 0 20px hsl(142 76% 50% / 0.4);
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 13% 9%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 13% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 13% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 142 76% 50%;
+    --primary-foreground: 220 13% 9%;
+    --primary-light: 142 76% 60%;
+    --primary-dark: 142 76% 35%;
+
+    --secondary: 48 100% 70%;
+    --secondary-foreground: 220 13% 9%;
+    --secondary-light: 48 100% 80%;
+    --secondary-dark: 48 100% 55%;
+
+    --accent: 213 94% 70%;
+    --accent-foreground: 220 13% 9%;
+
+    --success: 160 84% 45%;
+    --success-foreground: 220 13% 9%;
+
+    --warning: 25 95% 60%;
+    --warning-foreground: 220 13% 9%;
+
+    --muted: 220 13% 15%;
+    --muted-foreground: 215 16% 65%;
+
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 220 13% 9%;
+
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    --ring: 142 76% 50%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 50%), hsl(142 76% 60%));
+    --gradient-secondary: linear-gradient(135deg, hsl(48 100% 70%), hsl(48 100% 80%));
+    --gradient-hero: linear-gradient(135deg, hsl(142 76% 50%), hsl(213 94% 70%));
+    --gradient-card: linear-gradient(145deg, hsl(220 13% 12%), hsl(220 13% 15%));
+
+    --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+    --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.4);
+    --shadow-large: 0 8px 32px -8px hsl(0 0% 0% / 0.5);
+    --shadow-colored: 0 8px 32px -8px hsl(142 76% 50% / 0.4);
+    --shadow-glow: 0 0 20px hsl(142 76% 60% / 0.5);
+
+    --sidebar-background: 220 13% 12%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 142 76% 50%;
+    --sidebar-primary-foreground: 220 13% 9%;
+    --sidebar-accent: 220 13% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 220 13% 20%;
+    --sidebar-ring: 142 76% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* Custom animations and utilities for gamified UI */
+@layer utilities {
+  /* Prize card animations */
+  .prize-card-hover {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-lg;
+  }
+
+  .prize-card-glow {
+    @apply shadow-[0_0_30px_hsl(var(--primary)/0.3)] animate-pulse;
+  }
+
+  /* Winning celebration animation */
+  .celebration-bounce {
+    animation: celebration 0.6s ease-in-out infinite alternate;
+  }
+
+  @keyframes celebration {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.05) rotate(2deg); }
+  }
+
+  /* Floating elements animation */
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Background gradients */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .bg-gradient-rainbow {
+    background: var(--gradient-rainbow);
+  }
+
+  /* Custom shadows */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-large {
+    box-shadow: var(--shadow-large);
+  }
+
+  .shadow-colored {
+    box-shadow: var(--shadow-colored);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Button hover effects */
+  .btn-primary {
+    @apply bg-gradient-primary text-primary-foreground rounded-xl px-6 py-3 font-semibold transition-all duration-300 hover:scale-105 hover:shadow-colored;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-secondary text-secondary-foreground rounded-xl px-6 py-3 font-semibold transition-all duration-300 hover:scale-105 hover:shadow-medium;
+  }
+
+  /* Lucky draw specific styles */
+  .lucky-card {
+    @apply bg-gradient-card backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-medium transition-all duration-300 hover:shadow-large hover:scale-[1.02];
+  }
+
+  .winner-glow {
+    @apply shadow-glow border-2 border-primary/50 bg-gradient-to-br from-primary/10 to-secondary/10;
+  }
+}
