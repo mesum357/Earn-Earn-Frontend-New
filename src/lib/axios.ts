@@ -9,15 +9,11 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to handle authentication
+// Request interceptor for session-based authentication
 api.interceptors.request.use(
   (config) => {
-    // You can add additional auth logic here if needed
-    // For example, adding JWT tokens from localStorage
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Session-based auth relies on cookies, no need for Authorization headers
+    // Just ensure credentials are included (already configured globally)
     return config;
   },
   (error) => {
@@ -32,9 +28,8 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem('token');
-      console.warn('Unauthorized request detected. User needs to log in.');
+      // Handle unauthorized access - session expired or not authenticated
+      console.warn('Unauthorized request detected. Session may be expired.');
       
       // Only redirect if we're not already on login/auth pages
       const currentPath = window.location.pathname;
