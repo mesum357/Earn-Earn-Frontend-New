@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Gift, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import axios from 'axios';
 
 const Login = () => {
@@ -14,25 +15,23 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const { toast } = useToast();
+  
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/login`,
-        { username: email, password },
-        { withCredentials: true }
-      );
-      setIsLoading(false);
+      await login(email, password);
       toast({
         title: 'Welcome back!',
-        description: response.data.message || 'Successfully logged in to your account.',
+        description: 'Successfully logged in to your account.',
       });
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     } catch (error: unknown) {
-      setIsLoading(false);
       let errorMsg = 'Login failed. Please try again.';
       if (axios.isAxiosError(error) && error.response) {
         errorMsg = error.response.data?.error || errorMsg;
@@ -42,6 +41,8 @@ const Login = () => {
         description: errorMsg,
         variant: 'destructive',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import NotificationCenter from '@/components/NotificationCenter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -24,8 +25,11 @@ import {
   X,
   CheckCircle,
   ClipboardCopy,
+  LogOut,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import giftBox from '@/assets/gift-box.jpg';
 import phonePrize from '@/assets/phone-prize.jpg';
 import axios from 'axios';
@@ -42,9 +46,11 @@ const Dashboard = () => {
   const [entryUploadUrl, setEntryUploadUrl] = useState<string | null>(null);
   const [isUploadingFund, setIsUploadingFund] = useState(false);
   const [isUploadingEntry, setIsUploadingEntry] = useState(false);
-  const [submittedButtons, setSubmittedButtons] = useState<{ [prizeId: number]: boolean }>({});
-  const [participationStatus, setParticipationStatus] = useState<{ [prizeId: number]: 'none' | 'waiting' | 'submitted' }>({});
+  const [participationStatus, setParticipationStatus] = useState<{ [prizeId: number]: 'none' | 'waiting' | 'submitted' | 'again' }>({});
+  const [notifications, setNotifications] = useState<{ id?: number; title: string; message: string; createdAt: string; read?: boolean; type?: string }[]>([]);
   const { toast } = useToast();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Example crypto wallet address
   const exampleWallet = '0x1234abcd5678efgh9012ijkl3456mnop7890qrst';
@@ -90,25 +96,82 @@ const Dashboard = () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/my-participations`, { withCredentials: true });
       const participations = response.data.participations || [];
-      // Build status: 'submitted' if submittedButton true, 'waiting' if exists but false
-      const newStatus: { [prizeId: number]: 'none' | 'waiting' | 'submitted' } = {};
+      const newStatus: { [prizeId: number]: 'none' | 'waiting' | 'submitted' | 'again' } = {};
       participations.forEach((p: any) => {
-        if (p.submittedButton) {
+        if (p.submittedButton === true) {
           newStatus[p.prizeId] = 'submitted';
-        } else {
+        } else if (p.submittedButton === false) {
+          newStatus[p.prizeId] = 'again';
+        } else if (p.submittedButton === null) {
+          // Pending approval
           newStatus[p.prizeId] = 'waiting';
+        } else {
+          newStatus[p.prizeId] = 'none';
         }
       });
       setParticipationStatus(newStatus);
-      console.log('Fetched participationStatus:', newStatus);
     } catch (err) {
-      // ignore
+      toast({ title: 'Error', description: 'Failed to fetch participations', variant: 'destructive' }); 
     }
   };
 
   useEffect(() => {
-    fetchParticipations();
-  }, []);
+    if (user) {
+      fetchParticipations();
+    // Fetch notifications
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/notifications`);
+        const notificationsData = response.data.notifications || [];
+        // Add id and read status to notifications
+        const enrichedNotifications = notificationsData.map((n: any, index: number) => ({
+          id: n.id || index + 1,
+          title: n.title,
+          message: n.message,
+          createdAt: n.createdAt,
+          read: n.read || false,
+          type: n.type || 'info'
+        }));
+        setNotifications(enrichedNotifications);
+      } catch (err) {
+        // Add some sample notifications for testing
+        const sampleNotifications = [
+          {
+            id: 1,
+            title: "Welcome to Easy Earn!",
+            message: "You've successfully joined our platform. Start participating in draws to win amazing prizes!",
+            createdAt: new Date().toISOString(),
+            read: false,
+            type: "info"
+          },
+          {
+            id: 2,
+            title: "New Prize Added",
+            message: "iPhone 15 Pro has been added to today's draws. Don't miss out!",
+            createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+            read: false,
+            type: "success"
+          },
+          {
+            id: 3,
+            title: "Prize Draw Result",
+            message: "Yesterday's mystery gift box winner has been announced. Check if it's you!",
+            createdAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+            read: true,
+            type: "warning"
+          }
+        ];
+        setNotifications(sampleNotifications);
+      }
+    };
+    fetchNotifications();
+    // POLLING: Refetch participations every 5 seconds
+    const interval = setInterval(() => {
+      fetchParticipations();
+    }, 5000);
+    return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const handleParticipate = (prize: any) => {
     setSelectedPrize(prize);
@@ -172,14 +235,12 @@ const Dashboard = () => {
           prizeId: selectedPrize?.id,
           prizeTitle: selectedPrize?.title,
           walletAddress,
-          receiptUrl: entryUploadUrl,
-          submittedButton: false // Always false in DB
+          receiptUrl: entryUploadUrl
         },
         { withCredentials: true }
       );
       // After submit, re-fetch participations to update status
       await fetchParticipations();
-      console.log('After submit, participationStatus:', participationStatus);
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to save participation.', variant: 'destructive' });
     }
@@ -222,13 +283,17 @@ const Dashboard = () => {
     toast({ title: 'Copied!', description: 'Wallet address copied to clipboard.' });
   };
 
-  // Reset submittedButton when dialog closes
-  const handleParticipateDialogChange = (open: boolean) => {
-    if (!open) {
-      setSubmittedButton(false);
-    }
-    setShowAddFundModal(open);
+  // Notification handlers
+  const handleMarkAsRead = (notificationId: number) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+    );
   };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/5">
@@ -240,9 +305,14 @@ const Dashboard = () => {
               <div className="bg-gradient-primary p-2 rounded-xl">
                 <Gift className="h-6 w-6 text-white" />
               </div>
+              <NotificationCenter 
+                notifications={notifications} 
+                onMarkAsRead={handleMarkAsRead}
+                onMarkAllAsRead={handleMarkAllAsRead}
+              />
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-                <p className="text-muted-foreground">Welcome back, John!</p>
+                <p className="text-muted-foreground">Welcome back, {user?.username || user?.email}!</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -252,9 +322,20 @@ const Dashboard = () => {
               </div>
               <Button
                 onClick={() => setShowAddFundModal(true)}
-                className="ml-auto bg-green-600 hover:bg-green-700"
+                className="bg-green-600 hover:bg-green-700"
               >
                 Add Funds
+              </Button>
+              <Button
+                onClick={async () => {
+                  await logout();
+                  navigate('/');
+                }}
+                variant="outline"
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
               </Button>
               {/* Add Funds Modal */}
               <Dialog open={showAddFundModal} onOpenChange={setShowAddFundModal}>
@@ -304,6 +385,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
 
       {/* Lucky Draw Notification */}
       <div className="container mx-auto px-4 py-8">
@@ -404,14 +486,16 @@ const Dashboard = () => {
                   >
                     <DialogTrigger asChild>
                       <Button
-                        className={`w-full btn-primary text-lg ${(participationStatus[prize.id] === 'submitted' || participationStatus[prize.id] === 'waiting') ? 'bg-red-500 hover:bg-red-600' : ''}`}
+                        className={`w-full btn-primary text-lg ${participationStatus[prize.id] === 'submitted' || participationStatus[prize.id] === 'waiting' ? 'bg-green-500 hover:bg-green-600' : participationStatus[prize.id] === 'again' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}`}
                         onClick={() => handleParticipate(prize)}
                         disabled={participationStatus[prize.id] === 'submitted' || participationStatus[prize.id] === 'waiting'}
                       >
-                        {participationStatus[prize.id] === 'submitted'
-                          ? 'Submitted'
-                          : participationStatus[prize.id] === 'waiting'
+                        {participationStatus[prize.id] === 'waiting'
                           ? 'Waiting For Approval'
+                          : participationStatus[prize.id] === 'submitted'
+                          ? 'Submitted'
+                          : participationStatus[prize.id] === 'again'
+                          ? 'Participate Again'
                           : 'Participate Now'}
                       </Button>
                     </DialogTrigger>
@@ -499,11 +583,13 @@ const Dashboard = () => {
                           </div>
                         </div>
 
-                        <Button type="submit" className={`w-full btn-primary ${(participationStatus[selectedPrize?.id] === 'submitted' || participationStatus[selectedPrize?.id] === 'waiting') ? 'bg-red-500 hover:bg-red-600' : ''}`} disabled={isSubmitting || participationStatus[selectedPrize?.id] === 'submitted' || participationStatus[selectedPrize?.id] === 'waiting'}>
-                          {participationStatus[selectedPrize?.id] === 'submitted'
-                            ? 'Submitted'
-                            : participationStatus[selectedPrize?.id] === 'waiting'
+                        <Button type="submit" className={`w-full btn-primary ${participationStatus[selectedPrize?.id] === 'submitted' || participationStatus[selectedPrize?.id] === 'waiting' ? 'bg-green-500 hover:bg-green-600' : participationStatus[selectedPrize?.id] === 'again' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}`} disabled={isSubmitting || participationStatus[selectedPrize?.id] === 'submitted' || participationStatus[selectedPrize?.id] === 'waiting'}>
+                          {participationStatus[selectedPrize?.id] === 'waiting'
                             ? 'Waiting For Approval'
+                            : participationStatus[selectedPrize?.id] === 'submitted'
+                            ? 'Submitted'
+                            : participationStatus[selectedPrize?.id] === 'again'
+                            ? 'Participate Again'
                             : isSubmitting
                             ? 'Submitting...'
                             : 'Submit Entry'}

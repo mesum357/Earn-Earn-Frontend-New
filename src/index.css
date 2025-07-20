@@ -246,4 +246,28 @@
   .winner-glow {
     @apply shadow-glow border-2 border-primary/50 bg-gradient-to-br from-primary/10 to-secondary/10;
   }
+
+  /* Notification Center styles */
+  .notification-badge {
+    @apply absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-red-500 hover:bg-red-500;
+  }
+
+  .notification-item {
+    @apply p-4 cursor-pointer block h-auto transition-colors hover:bg-muted/50;
+  }
+
+  .notification-unread {
+    @apply bg-blue-50/50 hover:bg-blue-50 border-l-4 border-blue-500;
+  }
+
+  .notification-icon {
+    @apply h-4 w-4 flex-shrink-0;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 }
