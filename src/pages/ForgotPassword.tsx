@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Gift, ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import api from '@/lib/axios';
 import axios from 'axios';
 
 const ForgotPassword = () => {
@@ -19,11 +20,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/forgot-password`,
-        { email },
-        { withCredentials: true }
-      );
+      const response = await api.post('/forgot-password', { email });
       setIsLoading(false);
       setIsSubmitted(true);
       toast({

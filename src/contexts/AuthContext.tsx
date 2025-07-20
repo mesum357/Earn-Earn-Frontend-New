@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import api from '@/lib/axios';
 
 interface User {
   _id: string;
@@ -35,10 +35,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const checkAuth = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/me`,
-        { withCredentials: true }
-      );
+      const response = await api.get('/me');
       setUser(response.data.user);
     } catch (error) {
       setUser(null);
@@ -48,20 +45,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const login = async (email: string, password: string) => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/login`,
-      { username: email, password },
-      { withCredentials: true }
-    );
+    const response = await api.post('/login', {
+      username: email,
+      password
+    });
     setUser(response.data.user);
   };
 
   const logout = async () => {
     try {
-      await axios.get(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/logout`,
-        { withCredentials: true }
-      );
+      await api.get('/logout');
     } catch (error) {
       // Even if logout fails on server, clear local state
     }

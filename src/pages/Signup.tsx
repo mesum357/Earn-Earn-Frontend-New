@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Gift, Eye, EyeOff, ArrowLeft, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import api from '@/lib/axios';
 import axios from 'axios';
 
 const Signup = () => {
@@ -53,16 +54,12 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/register`,
-        {
-          username: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          email: formData.email
-        },
-        { withCredentials: true }
-      );
+      const response = await api.post('/register', {
+        username: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        email: formData.email
+      });
       setIsLoading(false);
       toast({
         title: 'Account created!',

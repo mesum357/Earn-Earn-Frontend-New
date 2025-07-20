@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Gift, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import api from '@/lib/axios';
 import axios from 'axios';
 
 function useQuery() {
@@ -50,11 +51,11 @@ const ResetPassword = () => {
     }
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/reset-password`,
-        { token, password, confirmPassword },
-        { withCredentials: true }
-      );
+      const response = await api.post('/reset-password', {
+        token, 
+        password, 
+        confirmPassword
+      });
       setIsLoading(false);
       toast({
         title: 'Password reset!',

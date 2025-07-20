@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { CheckCircle, XCircle, Gift } from 'lucide-react';
+import api from '@/lib/axios';
 import axios from 'axios';
 
 function useQuery() {
@@ -24,7 +25,7 @@ const VerifyEmail = () => {
         return;
       }
       try {
-        await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/verify-email?token=${token}`, { withCredentials: true });
+        await api.get(`/verify-email?token=${token}`);
         setStatus('success');
         setMessage('Your email has been verified! Redirecting to login...');
         setTimeout(() => navigate('/login'), 2500);

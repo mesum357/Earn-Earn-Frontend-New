@@ -32,7 +32,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import giftBox from '@/assets/gift-box.jpg';
 import phonePrize from '@/assets/phone-prize.jpg';
-import axios from 'axios';
+import api from '@/lib/axios';
 
 const Dashboard = () => {
   const [selectedPrize, setSelectedPrize] = useState<any>(null);
@@ -94,7 +94,7 @@ const Dashboard = () => {
 
   const fetchParticipations = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/my-participations`, { withCredentials: true });
+      const response = await api.get('/api/my-participations');
       const participations = response.data.participations || [];
       const newStatus: { [prizeId: number]: 'none' | 'waiting' | 'submitted' | 'again' } = {};
       participations.forEach((p: any) => {
@@ -121,7 +121,7 @@ const Dashboard = () => {
     // Fetch notifications
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/notifications`);
+      const response = await api.get('/api/notifications');
         const notificationsData = response.data.notifications || [];
         // Add id and read status to notifications
         const enrichedNotifications = notificationsData.map((n: any, index: number) => ({
@@ -185,11 +185,9 @@ const Dashboard = () => {
       const formData = new FormData();
       formData.append('file', e.target.files[0]);
       try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/upload`,
-          formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
+        const response = await api.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setFundUploadUrl(response.data.url);
         toast({ title: 'Receipt uploaded!', description: 'File uploaded successfully.' });
       } catch (error) {
@@ -209,11 +207,9 @@ const Dashboard = () => {
       const formData = new FormData();
       formData.append('file', e.target.files[0]);
       try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/upload`,
-          formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
+        const response = await api.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setEntryUploadUrl(response.data.url);
         toast({ title: 'Receipt uploaded!', description: 'File uploaded successfully.' });
       } catch (error) {
@@ -229,16 +225,12 @@ const Dashboard = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/participate`,
-        {
-          prizeId: selectedPrize?.id,
-          prizeTitle: selectedPrize?.title,
-          walletAddress,
-          receiptUrl: entryUploadUrl
-        },
-        { withCredentials: true }
-      );
+      await api.post('/api/participate', {
+        prizeId: selectedPrize?.id,
+        prizeTitle: selectedPrize?.title,
+        walletAddress,
+        receiptUrl: entryUploadUrl
+      });
       // After submit, re-fetch participations to update status
       await fetchParticipations();
     } catch (err) {
@@ -261,13 +253,9 @@ const Dashboard = () => {
     setFundReceipt(null);
     try {
       // Send fund request data to backend
-      await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/fund-request`,
-        {
-          receiptUrl: fundUploadUrl
-        },
-        { withCredentials: true }
-      );
+      await api.post('/api/fund-request', {
+        receiptUrl: fundUploadUrl
+      });
       toast({
         title: 'Fund Request Submitted',
         description: 'We’ve received your receipt and will verify it shortly.',
