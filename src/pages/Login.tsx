@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gift, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Gift, Eye, EyeOff, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import api from '@/lib/axios';
 import axios from 'axios';
 
 const Login = () => {
@@ -14,28 +16,73 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
   
-  const from = location.state?.from?.pathname || '/dashboard';
+  // Get return URL from query params or location state
+  const params = new URLSearchParams(location.search);
+  const returnTo = params.get('returnTo');
+  const from = returnTo || location.state?.from?.pathname || '/dashboard';
+
+// Check if the API is reachable
+  useEffect(() => {
+    const checkApiStatus = async () => {
+      try {
+        // Simple health check to the backend
+        await api.get('/health', { timeout: 5000 });
+        setApiStatus('online');
+      } catch (error) {
+        console.error('API health check failed:', error);
+        setApiStatus('offline');
+      }
+    };
+    
+    checkApiStatus();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoginError('');
+    
     try {
+      console.log(`Attempting to login with email: ${email}`);
       await login(email, password);
+      
       toast({
         title: 'Welcome back!',
         description: 'Successfully logged in to your account.',
       });
+      
+      console.log(`Login successful, redirecting to ${from}`);
       navigate(from, { replace: true });
     } catch (error: unknown) {
       let errorMsg = 'Login failed. Please try again.';
-      if (axios.isAxiosError(error) && error.response) {
-        errorMsg = error.response.data?.error || errorMsg;
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          // Server responded with an error
+          errorMsg = error.response.data?.error || errorMsg;
+          console.error(`Login failed with status ${error.response.status}:`, error.response.data);
+        } else if (error.request) {
+          // Request was made but no response received
+          errorMsg = 'No response from server. Please check your connection.';
+          console.error('Login failed - no response:', error.request);
+        } else {
+          // Request setup failed
+          errorMsg = `Request failed: ${error.message}`;
+          console.error('Login request setup failed:', error.message);
+        }
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
       }
+      
+      setLoginError(errorMsg);
+      
       toast({
         title: 'Login failed',
         description: errorMsg,
@@ -80,6 +127,24 @@ const Login = () => {
           </CardHeader>
 
           <CardContent>
+            {apiStatus === 'offline' && (
+              <Alert className="mb-4 bg-yellow-50 border-yellow-300">
+                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                <AlertDescription className="text-yellow-800">
+                  We're having trouble connecting to our servers. Please try again later.
+                </AlertDescription>
+              </Alert>
+            )}
+            
+            {loginError && (
+              <Alert className="mb-4 bg-destructive/10 border-destructive/30">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+                <AlertDescription className="text-destructive">
+                  {loginError}
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
@@ -91,6 +156,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="h-12"
+                  disabled={apiStatus === 'offline'}
                 />
               </div>
 
@@ -104,8 +170,9 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-12 pr-12"
-                  />
+                  className="h-12 pr-12"
+                  disabled={apiStatus === 'offline'}
+                />
                   <Button
                     type="button"
                     variant="ghost"
@@ -134,9 +201,9 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full btn-primary h-12 text-lg"
-                disabled={isLoading}
+                disabled={isLoading || apiStatus === 'offline'}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Signing in..." : apiStatus === 'checking' ? "Checking connection..." : apiStatus === 'offline' ? "Service Unavailable" : "Sign In"}
               </Button>
             </form>
 

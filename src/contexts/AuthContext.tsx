@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import api from '@/lib/axios';
+import axios from 'axios';
 
 interface User {
   _id: string;
@@ -33,36 +34,75 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = async () => {
+const checkAuth = async () => {
     try {
+      console.log('Checking authentication status...');
       const response = await api.get('/me');
+      console.log('Auth check successful:', response.data);
       setUser(response.data.user);
     } catch (error) {
+      console.warn('Auth check failed:', axios.isAxiosError(error) 
+        ? `${error.response?.status} ${error.response?.data?.error || ''}` 
+        : error);
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const login = async (email: string, password: string) => {
-    const response = await api.post('/login', {
-      username: email,
-      password
-    });
-    setUser(response.data.user);
-  };
-
-  const logout = async () => {
+const login = async (email: string, password: string) => {
     try {
-      await api.get('/logout');
+      console.log('Attempting login...');
+      const response = await api.post('/login', {
+        username: email,
+        password
+      });
+      
+      console.log('Login successful, user data:', response.data);
+      
+      if (!response.data.user) {
+        console.error('Login response missing user data:', response.data);
+        throw new Error('Invalid login response format');
+      }
+      
+      setUser(response.data.user);
+      
+      // Immediately verify the session is working
+      await checkAuth();
+      
+      return response.data;
     } catch (error) {
-      // Even if logout fails on server, clear local state
+      console.error('Login error:', error);
+      throw error;
     }
-    setUser(null);
   };
 
-  useEffect(() => {
+const logout = async () => {
+    try {
+      console.log('Logging out...');
+      await api.get('/logout');
+      console.log('Logout API call successful');
+    } catch (error) {
+      console.warn('Logout API call failed:', error);
+      // Even if logout fails on server, clear local state
+    } finally {
+      setUser(null);
+      console.log('User state cleared');
+    }
+  };
+
+useEffect(() => {
+    // On initial load, check authentication status
+    console.log('AuthContext mounted, checking authentication...');
     checkAuth();
+    
+    // Set up an interval to periodically check auth status (every 5 minutes)
+    const intervalId = setInterval(() => {
+      console.log('Periodic auth check...');
+      checkAuth();
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(intervalId);
   }, []);
 
   const value = {
