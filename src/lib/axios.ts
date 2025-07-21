@@ -8,9 +8,9 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  // Ensure XMLHttpRequest uses withCredentials
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
+  // Disable any browser cache that might interfere with cookies
+  // This ensures fresh responses and proper cookie handling
+  cache: false,
 });
 
 // Request interceptor for session-based authentication
