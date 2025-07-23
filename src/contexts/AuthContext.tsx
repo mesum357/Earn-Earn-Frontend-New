@@ -96,11 +96,11 @@ useEffect(() => {
     console.log('AuthContext mounted, checking authentication...');
     checkAuth();
     
-    // Set up an interval to periodically check auth status (every 5 minutes)
+    // Set up an interval to periodically check auth status (every 30 minutes)
     const intervalId = setInterval(() => {
       console.log('Periodic auth check...');
       checkAuth();
-    }, 5 * 60 * 1000);
+    }, 30 * 60 * 1000); // Changed from 5 minutes to 30 minutes
     
     return () => clearInterval(intervalId);
   }, []);

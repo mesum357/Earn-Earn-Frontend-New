@@ -118,58 +118,62 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchParticipations();
-    // Fetch notifications
-    const fetchNotifications = async () => {
-      try {
-      const response = await api.get('/api/notifications');
-        const notificationsData = response.data.notifications || [];
-        // Add id and read status to notifications
-        const enrichedNotifications = notificationsData.map((n: any, index: number) => ({
-          id: n.id || index + 1,
-          title: n.title,
-          message: n.message,
-          createdAt: n.createdAt,
-          read: n.read || false,
-          type: n.type || 'info'
-        }));
-        setNotifications(enrichedNotifications);
-      } catch (err) {
-        // Add some sample notifications for testing
-        const sampleNotifications = [
-          {
-            id: 1,
-            title: "Welcome to Easy Earn!",
-            message: "You've successfully joined our platform. Start participating in draws to win amazing prizes!",
-            createdAt: new Date().toISOString(),
-            read: false,
-            type: "info"
-          },
-          {
-            id: 2,
-            title: "New Prize Added",
-            message: "iPhone 15 Pro has been added to today's draws. Don't miss out!",
-            createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-            read: false,
-            type: "success"
-          },
-          {
-            id: 3,
-            title: "Prize Draw Result",
-            message: "Yesterday's mystery gift box winner has been announced. Check if it's you!",
-            createdAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-            read: true,
-            type: "warning"
-          }
-        ];
-        setNotifications(sampleNotifications);
-      }
-    };
-    fetchNotifications();
-    // POLLING: Refetch participations every 5 seconds
-    const interval = setInterval(() => {
-      fetchParticipations();
-    }, 5000);
-    return () => clearInterval(interval);
+      
+      // Fetch notifications only once on mount
+      const fetchNotifications = async () => {
+        try {
+          const response = await api.get('/api/notifications');
+          const notificationsData = response.data.notifications || [];
+          // Add id and read status to notifications
+          const enrichedNotifications = notificationsData.map((n: any, index: number) => ({
+            id: n.id || index + 1,
+            title: n.title,
+            message: n.message,
+            createdAt: n.createdAt,
+            read: n.read || false,
+            type: n.type || 'info'
+          }));
+          setNotifications(enrichedNotifications);
+        } catch (err) {
+          // Add some sample notifications for testing
+          const sampleNotifications = [
+            {
+              id: 1,
+              title: "Welcome to Easy Earn!",
+              message: "You've successfully joined our platform. Start participating in draws to win amazing prizes!",
+              createdAt: new Date().toISOString(),
+              read: false,
+              type: "info"
+            },
+            {
+              id: 2,
+              title: "New Prize Added",
+              message: "iPhone 15 Pro has been added to today's draws. Don't miss out!",
+              createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+              read: false,
+              type: "success"
+            },
+            {
+              id: 3,
+              title: "Prize Draw Result",
+              message: "Yesterday's mystery gift box winner has been announced. Check if it's you!",
+              createdAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+              read: true,
+              type: "warning"
+            }
+          ];
+          setNotifications(sampleNotifications);
+        }
+      };
+      
+      fetchNotifications();
+      
+      // REDUCED POLLING: Refetch participations every 30 seconds instead of 5 seconds
+      const interval = setInterval(() => {
+        fetchParticipations();
+      }, 30000); // Changed from 5000ms to 30000ms (30 seconds)
+      
+      return () => clearInterval(interval);
     }
   }, [user]);
 
