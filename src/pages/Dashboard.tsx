@@ -289,39 +289,42 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/5">
-      {/* Top Navbar */}
-      <div className="bg-white/95 backdrop-blur-sm border-b border-primary/10 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-primary p-2 rounded-xl">
-                <Gift className="h-6 w-6 text-white" />
-              </div>
-              <NotificationCenter 
-                notifications={notifications} 
-                onMarkAsRead={handleMarkAsRead}
-                onMarkAllAsRead={handleMarkAllAsRead}
-              />
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-                <p className="text-muted-foreground">Welcome back, {user?.username || user?.email}!</p>
-              </div>
-            </div>
-           
-              
-           
-            <Button
-                onClick={async () => {
-                  await logout();
-                  navigate('/');
-                }}
-                variant="outline"
-                className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-              {/* Add Funds Modal */}
+     {/* Top Navbar */}
+<div className="bg-white/95 backdrop-blur-sm border-b border-primary/10 sticky top-0 z-40">
+  <div className="container mx-auto px-4 py-4">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-3">
+        <div className="bg-gradient-primary p-2 rounded-xl">
+          <Gift className="h-6 w-6 text-white" />
+        </div>
+        <NotificationCenter 
+          notifications={notifications} 
+          onMarkAsRead={handleMarkAsRead}
+          onMarkAllAsRead={handleMarkAllAsRead}
+        />
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Welcome back, {user?.username || user?.email}!
+          </p>
+        </div>
+      </div>
+
+      <Button
+        onClick={async () => {
+          await logout();
+          navigate('/');
+        }}
+        variant="outline"
+        className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Logout
+      </Button>
+    </div>
+  </div>
+</div>
+         {/* Add Funds Modal */}
               <Dialog open={showAddFundModal} onOpenChange={setShowAddFundModal}>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
