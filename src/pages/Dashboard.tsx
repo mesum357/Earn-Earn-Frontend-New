@@ -307,18 +307,10 @@ const Dashboard = () => {
                 <p className="text-muted-foreground">Welcome back, {user?.username || user?.email}!</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <div className="text-sm text-muted-foreground">Balance</div>
-                <div className="text-xl font-bold text-primary">$45.20</div>
-              </div>
-              <Button
-                onClick={() => setShowAddFundModal(true)}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Add Funds
-              </Button>
-              <Button
+           
+              
+           
+            <Button
                 onClick={async () => {
                   await logout();
                   navigate('/');
