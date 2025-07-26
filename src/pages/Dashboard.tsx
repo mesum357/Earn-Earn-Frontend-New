@@ -114,58 +114,62 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchParticipations();
-    // Fetch notifications
-    const fetchNotifications = async () => {
-      try {
-      const response = await api.get('/api/notifications');
-        const notificationsData = response.data.notifications || [];
-        // Add id and read status to notifications
-        const enrichedNotifications = notificationsData.map((n: any, index: number) => ({
-          id: n.id || index + 1,
-          title: n.title,
-          message: n.message,
-          createdAt: n.createdAt,
-          read: n.read || false,
-          type: n.type || 'info'
-        }));
-        setNotifications(enrichedNotifications);
-      } catch (err) {
-        // Add some sample notifications for testing
-        const sampleNotifications = [
-          {
-            id: 1,
-            title: "Welcome to Easy Earn!",
-            message: "You've successfully joined our platform. Start participating in draws to win amazing prizes!",
-            createdAt: new Date().toISOString(),
-            read: false,
-            type: "info"
-          },
-          {
-            id: 2,
-            title: "New Prize Added",
-            message: "iPhone 15 Pro has been added to today's draws. Don't miss out!",
-            createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-            read: false,
-            type: "success"
-          },
-          {
-            id: 3,
-            title: "Prize Draw Result",
-            message: "Yesterday's mystery gift box winner has been announced. Check if it's you!",
-            createdAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-            read: true,
-            type: "warning"
-          }
-        ];
-        setNotifications(sampleNotifications);
-      }
-    };
-    fetchNotifications();
-    // POLLING: Refetch participations every 5 seconds
-    const interval = setInterval(() => {
-      fetchParticipations();
-    }, 5000);
-    return () => clearInterval(interval);
+      
+      // Fetch notifications only once on mount
+      const fetchNotifications = async () => {
+        try {
+          const response = await api.get('/api/notifications');
+          const notificationsData = response.data.notifications || [];
+          // Add id and read status to notifications
+          const enrichedNotifications = notificationsData.map((n: any, index: number) => ({
+            id: n.id || index + 1,
+            title: n.title,
+            message: n.message,
+            createdAt: n.createdAt,
+            read: n.read || false,
+            type: n.type || 'info'
+          }));
+          setNotifications(enrichedNotifications);
+        } catch (err) {
+          // Add some sample notifications for testing
+          const sampleNotifications = [
+            {
+              id: 1,
+              title: "Welcome to Easy Earn!",
+              message: "You've successfully joined our platform. Start participating in draws to win amazing prizes!",
+              createdAt: new Date().toISOString(),
+              read: false,
+              type: "info"
+            },
+            {
+              id: 2,
+              title: "New Prize Added",
+              message: "iPhone 15 Pro has been added to today's draws. Don't miss out!",
+              createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+              read: false,
+              type: "success"
+            },
+            {
+              id: 3,
+              title: "Prize Draw Result",
+              message: "Yesterday's mystery gift box winner has been announced. Check if it's you!",
+              createdAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+              read: true,
+              type: "warning"
+            }
+          ];
+          setNotifications(sampleNotifications);
+        }
+      };
+      
+      fetchNotifications();
+      
+      // REDUCED POLLING: Refetch participations every 30 seconds instead of 5 seconds
+      const interval = setInterval(() => {
+        fetchParticipations();
+      }, 30000); // Changed from 5000ms to 30000ms (30 seconds)
+      
+      return () => clearInterval(interval);
     }
   }, [user]);
 
@@ -244,6 +248,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/5">
+<<<<<<< HEAD
       {/* Top Navbar */}
       <div className="bg-white/95 backdrop-blur-sm border-b border-primary/10 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
@@ -274,6 +279,87 @@ const Dashboard = () => {
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
+=======
+     {/* Top Navbar */}
+<div className="bg-white/95 backdrop-blur-sm border-b border-primary/10 sticky top-0 z-40">
+  <div className="container mx-auto px-4 py-4">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-3">
+        <div className="bg-gradient-primary p-2 rounded-xl">
+          <Gift className="h-6 w-6 text-white" />
+        </div>
+        <NotificationCenter 
+          notifications={notifications} 
+          onMarkAsRead={handleMarkAsRead}
+          onMarkAllAsRead={handleMarkAllAsRead}
+        />
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Welcome back, {user?.username || user?.email}!
+          </p>
+        </div>
+      </div>
+
+      <Button
+        onClick={async () => {
+          await logout();
+          navigate('/');
+        }}
+        variant="outline"
+        className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Logout
+      </Button>
+    </div>
+  </div>
+</div>
+         {/* Add Funds Modal */}
+              <Dialog open={showAddFundModal} onOpenChange={setShowAddFundModal}>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-green-600">Add Funds to Participate</DialogTitle>
+                    <DialogDescription>Transfer amount and upload receipt</DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Send Payment To:</Label>
+                      <div className="bg-gray-100 text-sm p-2 rounded border border-gray-300">
+                        0x1234abcd5678efgh9012ijkl3456mnop7890qrst
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="receipt" className="text-sm font-medium text-gray-600">
+                        Upload Receipt
+                      </Label>
+                      <Input
+                        id="receipt"
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={handleFundFileChange}
+                        disabled={isUploadingFund}
+                      />
+                      {isUploadingFund && <div className="text-xs text-muted-foreground">Uploading...</div>}
+                      {fundUploadUrl && (
+                        <div className="mt-2">
+                          <a href={fundUploadUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">View Uploaded Receipt</a>
+                        </div>
+                      )}
+                    </div>
+
+                    <Button
+                      onClick={handleSubmitFund}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      Submit Request
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+>>>>>>> a8a769a32d4967d0214e950dc32063f0bdd3924b
             </div>
           </div>
         </div>

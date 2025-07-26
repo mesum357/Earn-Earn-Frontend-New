@@ -128,10 +128,11 @@ export const runAuthDiagnostic = async () => {
 // Check if CORS is properly configured
 const checkCorsConfiguration = async () => {
   try {
-    // Make a preflight OPTIONS request to check CORS
-    const response = await fetch(api.defaults.baseURL + '/me', {
+    // Make a preflight OPTIONS request to check CORS using axios
+    const response = await api.request({
       method: 'OPTIONS',
-      credentials: 'include',
+      url: '/me',
+      withCredentials: true,
       headers: {
         'Origin': window.location.origin,
         'Access-Control-Request-Method': 'GET',
