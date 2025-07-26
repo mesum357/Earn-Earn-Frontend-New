@@ -40,11 +40,7 @@ const Dashboard = () => {
   const [receipt, setReceipt] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNotification, setShowNotification] = useState(true);
-  const [showAddFundModal, setShowAddFundModal] = useState(false);
-  const [fundReceipt, setFundReceipt] = useState<File | null>(null);
-  const [fundUploadUrl, setFundUploadUrl] = useState<string | null>(null);
   const [entryUploadUrl, setEntryUploadUrl] = useState<string | null>(null);
-  const [isUploadingFund, setIsUploadingFund] = useState(false);
   const [isUploadingEntry, setIsUploadingEntry] = useState(false);
   const [participationStatus, setParticipationStatus] = useState<{ [prizeId: number]: 'none' | 'waiting' | 'submitted' | 'again' }>({});
   const [notifications, setNotifications] = useState<{ id?: number; title: string; message: string; createdAt: string; read?: boolean; type?: string }[]>([]);
@@ -177,27 +173,6 @@ const Dashboard = () => {
     setSelectedPrize(prize);
   };
 
-  // Handle file upload for Add Funds
-  const handleFundFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFundReceipt(e.target.files[0]);
-      setIsUploadingFund(true);
-      const formData = new FormData();
-      formData.append('file', e.target.files[0]);
-      try {
-        const response = await api.post('/api/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        setFundUploadUrl(response.data.url);
-        toast({ title: 'Receipt uploaded!', description: 'File uploaded successfully.' });
-      } catch (error) {
-        toast({ title: 'Upload failed', description: 'Could not upload file.', variant: 'destructive' });
-        setFundUploadUrl(null);
-      } finally {
-        setIsUploadingFund(false);
-      }
-    }
-  };
 
   // Handle file upload for Participate Now
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,22 +223,6 @@ const Dashboard = () => {
     }, 1500);
   };
 
-  const handleSubmitFund = async () => {
-    setShowAddFundModal(false);
-    setFundReceipt(null);
-    try {
-      // Send fund request data to backend
-      await api.post('/api/fund-request', {
-        receiptUrl: fundUploadUrl
-      });
-      toast({
-        title: 'Fund Request Submitted',
-        description: 'We’ve received your receipt and will verify it shortly.',
-      });
-    } catch (err) {
-      toast({ title: 'Error', description: 'Failed to save fund request.', variant: 'destructive' });
-    }
-  };
 
   // Copy wallet address to clipboard
   const handleCopyWallet = () => {
@@ -304,16 +263,6 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <div className="text-sm text-muted-foreground">Balance</div>
-                <div className="text-xl font-bold text-primary">$45.20</div>
-              </div>
-              <Button
-                onClick={() => setShowAddFundModal(true)}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Add Funds
-              </Button>
               <Button
                 onClick={async () => {
                   await logout();
@@ -325,50 +274,6 @@ const Dashboard = () => {
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
-              {/* Add Funds Modal */}
-              <Dialog open={showAddFundModal} onOpenChange={setShowAddFundModal}>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-green-600">Add Funds to Participate</DialogTitle>
-                    <DialogDescription>Transfer amount and upload receipt</DialogDescription>
-                  </DialogHeader>
-
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-600">Send Payment To:</Label>
-                      <div className="bg-gray-100 text-sm p-2 rounded border border-gray-300">
-                        0x1234abcd5678efgh9012ijkl3456mnop7890qrst
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="receipt" className="text-sm font-medium text-gray-600">
-                        Upload Receipt
-                      </Label>
-                      <Input
-                        id="receipt"
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={handleFundFileChange}
-                        disabled={isUploadingFund}
-                      />
-                      {isUploadingFund && <div className="text-xs text-muted-foreground">Uploading...</div>}
-                      {fundUploadUrl && (
-                        <div className="mt-2">
-                          <a href={fundUploadUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">View Uploaded Receipt</a>
-                        </div>
-                      )}
-                    </div>
-
-                    <Button
-                      onClick={handleSubmitFund}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                    >
-                      Submit Request
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
             </div>
           </div>
         </div>
