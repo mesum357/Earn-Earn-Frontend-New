@@ -3,13 +3,14 @@ import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import NetworkError from '@/components/NetworkError';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, loading, checkAuth } = useAuth();
+  const { user, loading, networkError, checkAuth, retryConnection } = useAuth();
   const location = useLocation();
 
   // Re-verify authentication when component mounts
@@ -17,6 +18,16 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     console.log('ProtectedRoute: Verifying authentication status');
     checkAuth();
   }, [checkAuth]);
+
+  // Show network error if there's a connectivity issue
+  if (networkError && !loading) {
+    return (
+      <NetworkError 
+        onRetry={retryConnection}
+        message="Cannot connect to the authentication server. Please check your connection and try again."
+      />
+    );
+  }
 
   if (loading) {
     return (
