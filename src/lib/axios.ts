@@ -69,6 +69,28 @@ api.interceptors.response.use(
         console.error('Server error:', error.response.status, error.response.data);
       }
     } else if (error.request) {
+      // Check if it's a CORS or network error
+      const isCorsError = error.message?.includes('CORS') || 
+                         error.message?.includes('Access-Control-Allow-Origin') ||
+                         error.code === 'ERR_NETWORK' ||
+                         error.code === 'ERR_FAILED' ||
+                         (error.request && error.request.status === 0);
+      
+      if (isCorsError) {
+        console.error('CORS or Network error detected:', {
+          message: error.message,
+          code: error.code,
+          status: error.request?.status,
+          config_url: error.config?.url,
+          baseURL: error.config?.baseURL
+        });
+        
+        // Create a more descriptive error for CORS issues
+        const corsError = new Error('Network connection failed. This might be due to CORS policy or server unavailability.');
+        corsError.name = 'CORSError';
+        return Promise.reject(corsError);
+      }
+      
       // Request was made but no response received
       console.error('Network error - no response received:', error.request);
     } else {

@@ -11,9 +11,11 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  networkError: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  retryConnection: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,21 +35,38 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [networkError, setNetworkError] = useState(false);
 
 const checkAuth = async () => {
     try {
       console.log('Checking authentication status...');
+      setNetworkError(false); // Clear any previous network errors
       const response = await api.get('/me');
       console.log('Auth check successful:', response.data);
       setUser(response.data.user);
-    } catch (error) {
-      console.warn('Auth check failed:', axios.isAxiosError(error) 
-        ? `${error.response?.status} ${error.response?.data?.error || ''}` 
-        : error);
+    } catch (error: any) {
+      // Handle different types of errors
+      if (error.name === 'CORSError' || (axios.isAxiosError(error) && error.code === 'ERR_NETWORK')) {
+        console.error('Network/CORS Error: Cannot connect to backend server.');
+        console.error('Frontend:', window.location.origin);
+        console.error('Backend:', import.meta.env.VITE_API_URL);
+        setNetworkError(true);
+      } else if (axios.isAxiosError(error)) {
+        console.warn('Auth check failed:', `${error.response?.status} ${error.response?.data?.error || error.message}`);
+        // Don't set network error for authentication failures
+      } else {
+        console.warn('Auth check failed:', error.message || error);
+      }
       setUser(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  const retryConnection = () => {
+    setLoading(true);
+    setNetworkError(false);
+    checkAuth();
   };
 
 const login = async (email: string, password: string) => {
@@ -96,11 +115,11 @@ useEffect(() => {
     console.log('AuthContext mounted, checking authentication...');
     checkAuth();
     
-    // Set up an interval to periodically check auth status (every 5 minutes)
+    // Set up an interval to periodically check auth status (every 30 minutes)
     const intervalId = setInterval(() => {
       console.log('Periodic auth check...');
       checkAuth();
-    }, 5 * 60 * 1000);
+    }, 30 * 60 * 1000); // Changed from 5 minutes to 30 minutes
     
     return () => clearInterval(intervalId);
   }, []);
@@ -108,9 +127,11 @@ useEffect(() => {
   const value = {
     user,
     loading,
+    networkError,
     login,
     logout,
     checkAuth,
+    retryConnection,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
