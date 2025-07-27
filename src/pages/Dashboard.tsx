@@ -36,7 +36,7 @@ import api from '@/lib/axios';
 
 const Dashboard = () => {
   const [selectedPrize, setSelectedPrize] = useState<any>(null);
-  const [walletAddress, setWalletAddress] = useState<string>('0x1234abcd5678efgh9012ijkl3456mnop7890qrst');
+  const [walletAddress, setWalletAddress] = useState<string>('1048420929');
   const [receipt, setReceipt] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNotification, setShowNotification] = useState(true);
@@ -48,8 +48,8 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Example crypto wallet address
-  const exampleWallet = '0x1234abcd5678efgh9012ijkl3456mnop7890qrst';
+  // Example Binance UID
+  const exampleWallet = '1048420929';
 
   const prizes = [
     {
@@ -62,7 +62,6 @@ const Dashboard = () => {
       description:
         'Surprise gift worth $10-50! Could be electronics, gift cards, or exclusive merchandise. Every box contains something special - perfect for trying your luck without breaking the bank.',
       features: [
-        'Guaranteed value $10+',
         'Surprise element',
         'Fast shipping',
         'Perfect starter prize',
@@ -224,10 +223,10 @@ const Dashboard = () => {
   };
 
 
-  // Copy wallet address to clipboard
+  // Copy Binance UID to clipboard
   const handleCopyWallet = () => {
     navigator.clipboard.writeText(walletAddress);
-    toast({ title: 'Copied!', description: 'Wallet address copied to clipboard.' });
+    toast({ title: 'Copied!', description: 'Binance UID copied to clipboard.' });
   };
 
   // Notification handlers
@@ -405,11 +404,11 @@ const Dashboard = () => {
 
                       <form onSubmit={handleSubmitEntry} className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="wallet">Wallet Address</Label>
+                          <Label htmlFor="wallet">Binance UID</Label>
                           <div className="relative">
                             <Input
                               id="wallet"
-                              placeholder="Enter your wallet address"
+                              placeholder="Enter your Binance UID"
                               value={walletAddress}
                               readOnly
                               className="h-12 pr-12"
@@ -425,7 +424,7 @@ const Dashboard = () => {
                             </Button>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            This is your crypto wallet address for prize payout.
+                            This is your Binance UID for prize payout.
                           </p>
                         </div>
 
