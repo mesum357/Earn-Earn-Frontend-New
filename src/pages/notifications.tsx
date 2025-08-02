@@ -31,7 +31,7 @@ const NotificationsPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app';
       console.log('Fetching notifications from:', apiUrl);
       
       const response = await axios.get(
@@ -96,7 +96,7 @@ const NotificationsPage = () => {
   const markAsRead = async (notificationId: string) => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3005'}/api/user/notifications/${notificationId}/read`,
+        `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/user/notifications/${notificationId}/read`,
         {},
         { 
           withCredentials: true,
@@ -114,7 +114,7 @@ const NotificationsPage = () => {
   const markAllAsRead = async () => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3005'}/api/user/notifications/read-all`,
+        `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/user/notifications/read-all`,
         {},
         { 
           withCredentials: true,

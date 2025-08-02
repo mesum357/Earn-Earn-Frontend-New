@@ -100,7 +100,7 @@ export function DepositPage() {
     formData.append('image', file)
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3005'}/api/upload-image`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/upload-image`, {
         method: 'POST',
         body: formData,
         credentials: 'include'

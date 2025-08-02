@@ -48,7 +48,7 @@ export function WithdrawPage() {
   const fetchRequirements = async () => {
     try {
       setLoading(true)
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005'
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
       const response = await axios.get(`${apiUrl}/api/withdrawal-requirements`, {
         withCredentials: true
       })
@@ -67,7 +67,7 @@ export function WithdrawPage() {
   const fetchWithdrawals = async () => {
     try {
       setWithdrawalsLoading(true)
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005'
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
       const response = await axios.get(`${apiUrl}/api/withdrawal-history`, {
         withCredentials: true
       })
@@ -111,7 +111,7 @@ export function WithdrawPage() {
     setIsProcessing(true)
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005'
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
       const response = await axios.post(`${apiUrl}/api/withdrawal-request`, {
         amount: Number.parseFloat(amount),
         walletAddress

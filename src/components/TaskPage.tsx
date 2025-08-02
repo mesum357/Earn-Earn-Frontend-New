@@ -40,7 +40,7 @@ export function TaskPage() {
   const fetchTasks = async () => {
     try {
       setLoading(true)
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005'
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
       console.log('Fetching tasks from:', `${apiUrl}/api/tasks`)
       
       const response = await axios.get(`${apiUrl}/api/tasks`, {
@@ -75,7 +75,7 @@ export function TaskPage() {
       setUploadingScreenshot(true)
       const formData = new FormData()
       formData.append('file', file)
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005'
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
 
       const response = await axios.post(
         `${apiUrl}/api/upload-screenshot`,
@@ -105,7 +105,7 @@ export function TaskPage() {
 
     try {
       setSubmittingTask(selectedTask.id)
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005'
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
       
       const response = await axios.post(
         `${apiUrl}/api/tasks/${selectedTask.id}/submit`,

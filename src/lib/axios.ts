@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3005',
+  baseURL: import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app',
   withCredentials: true, // Important for cross-domain cookie handling
   headers: {
     'Content-Type': 'application/json',

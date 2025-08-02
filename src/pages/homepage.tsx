@@ -91,7 +91,7 @@ const Dashboard = () => {
 
   const fetchParticipations = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/my-participations`, { withCredentials: true });
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/my-participations`, { withCredentials: true });
       const participations = response.data.participations || [];
       const newStatus: { [prizeId: number]: 'none' | 'waiting' | 'submitted' | 'again' } = {};
       participations.forEach((p: any) => {
@@ -118,7 +118,7 @@ const Dashboard = () => {
     // Fetch notifications
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3005'}/api/user/notifications`, { withCredentials: true });
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/user/notifications`, { withCredentials: true });
         const notificationsData = response.data.notifications || [];
         // Add id and read status to notifications
         const enrichedNotifications = notificationsData.map((n: any, index: number) => ({
@@ -158,7 +158,7 @@ const Dashboard = () => {
       formData.append('file', e.target.files[0]);
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/upload`,
+          `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/upload`,
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
@@ -178,7 +178,7 @@ const Dashboard = () => {
     setIsSubmitting(true);
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/participate`,
+        `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/participate`,
         {
           prizeId: selectedPrize?.id,
           prizeTitle: selectedPrize?.title,
