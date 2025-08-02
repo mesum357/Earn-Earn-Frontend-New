@@ -18,6 +18,8 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [showResendOption, setShowResendOption] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
@@ -44,10 +46,40 @@ const Login = () => {
     checkApiStatus();
   }, []);
 
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast({
+        title: 'Email required',
+        description: 'Please enter your email address first.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const response = await api.post('/api/resend-verification', { email });
+      toast({
+        title: 'Email sent!',
+        description: response.data.message,
+      });
+      setShowResendOption(false);
+    } catch (error: any) {
+      toast({
+        title: 'Failed to send email',
+        description: error.response?.data?.error || 'Please try again later.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError('');
+    setShowResendOption(false);
     
     try {
       console.log(`Attempting to login with email: ${email}`);
@@ -68,6 +100,11 @@ const Login = () => {
           // Server responded with an error
           errorMsg = error.response.data?.error || errorMsg;
           console.error(`Login failed with status ${error.response.status}:`, error.response.data);
+          
+          // Check if it's an unverified email error
+          if (error.response.data?.error?.includes('verify your email')) {
+            setShowResendOption(true);
+          }
         } else if (error.request) {
           // Request was made but no response received
           errorMsg = 'No response from server. Please check your connection.';
@@ -141,6 +178,25 @@ const Login = () => {
                 <AlertTriangle className="h-5 w-5 text-destructive" />
                 <AlertDescription className="text-destructive">
                   {loginError}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {showResendOption && (
+              <Alert className="mb-4 border-blue-200 bg-blue-50">
+                <AlertDescription className="text-blue-800">
+                  <div className="flex items-center justify-between">
+                    <span>Need to verify your email? We can resend the verification link.</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResendVerification}
+                      disabled={isResending}
+                      className="ml-4"
+                    >
+                      {isResending ? 'Sending...' : 'Resend Email'}
+                    </Button>
+                  </div>
                 </AlertDescription>
               </Alert>
             )}

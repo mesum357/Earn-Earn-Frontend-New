@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,8 +21,50 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [referrerName, setReferrerName] = useState('');
+  const [isValidatingCode, setIsValidatingCode] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  // Check for referral code in URL on component mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      setReferralCode(refCode);
+      validateReferralCode(refCode);
+    }
+  }, [location]);
+
+  const validateReferralCode = async (code: string) => {
+    if (!code) return;
+    
+    setIsValidatingCode(true);
+    try {
+      const response = await api.get(`/api/referrals/validate/${code}`);
+      if (response.data.valid) {
+        setReferrerName(response.data.referrerName);
+        toast({
+          title: 'Valid referral code!',
+          description: `You'll be referred by ${response.data.referrerName}`,
+        });
+      } else {
+        setReferralCode('');
+        setReferrerName('');
+        toast({
+          title: 'Invalid referral code',
+          description: 'The referral code is not valid.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error validating referral code:', error);
+    } finally {
+      setIsValidatingCode(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -58,14 +100,16 @@ const Signup = () => {
         username: formData.email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
-        email: formData.email
+        email: formData.email,
+        referralCode: referralCode || undefined
       });
       setIsLoading(false);
       toast({
         title: 'Account created!',
         description: response.data.message || 'Please check your email to verify your account.',
       });
-      navigate('/login');
+      // Navigate to verify email page instead of login
+      navigate('/verify-email');
     } catch (error: unknown) {
       setIsLoading(false);
       let errorMsg = 'Signup failed. Please try again.';
@@ -217,6 +261,48 @@ const Signup = () => {
                   required
                   className="h-12"
                 />
+              </div>
+
+              {/* Referral Code Section */}
+              <div className="space-y-2">
+                <Label htmlFor="referralCode">Referral Code or User ID (Optional)</Label>
+                <div className="flex space-x-2">
+                  <Input
+                    id="referralCode"
+                    name="referralCode"
+                    type="text"
+                    placeholder="Enter referral code or user ID"
+                    value={referralCode}
+                    onChange={(e) => {
+                      setReferralCode(e.target.value);
+                      if (e.target.value) {
+                        validateReferralCode(e.target.value);
+                      } else {
+                        setReferrerName('');
+                      }
+                    }}
+                    className="h-12 flex-1"
+                    disabled={isValidatingCode}
+                  />
+                  {isValidatingCode && (
+                    <div className="flex items-center justify-center w-12 h-12 bg-muted rounded-md">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    </div>
+                  )}
+                </div>
+                {referrerName && (
+                  <div className="text-sm text-green-600 space-y-1">
+                    <p>✓ Valid referral code! You'll be referred by {referrerName}</p>
+                    <p className="text-xs text-gray-600">
+                      💡 Referral bonus of $5 will be given to {referrerName} after you verify your email
+                    </p>
+                  </div>
+                )}
+                {referralCode && !referrerName && !isValidatingCode && (
+                  <p className="text-sm text-red-600">
+                    ✗ Invalid referral code
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center space-x-2">

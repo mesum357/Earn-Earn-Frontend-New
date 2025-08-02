@@ -39,7 +39,7 @@ const Hero = () => {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button 
                 size="lg"
-                onClick={() => navigate('/signup')}
+                onClick={() => navigate('/homepage')}
                 className="btn-secondary text-lg px-8 py-4 h-auto group"
               >
                 Join the Lucky Draw Now
@@ -48,7 +48,7 @@ const Hero = () => {
               
              <Button 
   size="lg"
-  onClick={() => navigate('/login')}
+  onClick={() => navigate('/homepage')}
   className="text-lg px-8 py-4 h-auto border border-white/30 text-white hover:bg-white/10 hover:border-white/50"
 >
   <Gift className="mr-2 h-5 w-5" />

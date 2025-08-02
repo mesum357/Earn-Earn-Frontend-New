@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import api from '@/lib/axios';
 import axios from 'axios';
 
@@ -6,6 +6,9 @@ interface User {
   _id: string;
   email: string;
   username: string;
+  balance?: number;
+  referralCode?: string;
+  hasDeposited?: boolean;
 }
 
 interface AuthContextType {
@@ -16,6 +19,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   retryConnection: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,7 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState(false);
 
-const checkAuth = async () => {
+const checkAuth = useCallback(async () => {
     try {
       console.log('Checking authentication status...');
       setNetworkError(false); // Clear any previous network errors
@@ -61,15 +65,15 @@ const checkAuth = async () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Empty dependency array since this function doesn't depend on any state
 
-  const retryConnection = () => {
+  const retryConnection = useCallback(() => {
     setLoading(true);
     setNetworkError(false);
     checkAuth();
-  };
+  }, [checkAuth]);
 
-const login = async (email: string, password: string) => {
+const login = useCallback(async (email: string, password: string) => {
     try {
       console.log('Attempting login...');
       const response = await api.post('/login', {
@@ -94,9 +98,9 @@ const login = async (email: string, password: string) => {
       console.error('Login error:', error);
       throw error;
     }
-  };
+  }, [checkAuth]);
 
-const logout = async () => {
+const logout = useCallback(async () => {
     try {
       console.log('Logging out...');
       await api.get('/logout');
@@ -108,7 +112,7 @@ const logout = async () => {
       setUser(null);
       console.log('User state cleared');
     }
-  };
+  }, []);
 
 useEffect(() => {
     // On initial load, check authentication status
@@ -122,7 +126,11 @@ useEffect(() => {
     }, 30 * 60 * 1000); // Changed from 5 minutes to 30 minutes
     
     return () => clearInterval(intervalId);
-  }, []);
+  }, [checkAuth]);
+
+  const refreshUser = useCallback(async () => {
+    await checkAuth();
+  }, [checkAuth]);
 
   const value = {
     user,
@@ -132,6 +140,7 @@ useEffect(() => {
     logout,
     checkAuth,
     retryConnection,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

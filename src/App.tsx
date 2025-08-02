@@ -8,10 +8,16 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useEffect } from "react";
 import { runAuthDiagnostic } from "@/lib/health-check";
 import Index from "./pages/Index";
+import Homepage from "./pages/homepage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
+import Deposit from "./pages/Deposit";
+import Withdraw from "./pages/Withdraw";
+import Tasks from "./pages/Tasks";
+import Refer from "./pages/Refer";
+import NotificationsPage from "./pages/notifications";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
@@ -46,12 +52,38 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/homepage" element={<Homepage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/deposit" element={
+              <ProtectedRoute>
+                <Deposit />
+              </ProtectedRoute>
+            } />
+            <Route path="/withdraw" element={
+              <ProtectedRoute>
+                <Withdraw />
+              </ProtectedRoute>
+            } />
+            <Route path="/tasks" element={
+              <ProtectedRoute>
+                <Tasks />
+              </ProtectedRoute>
+            } />
+            <Route path="/refer" element={
+              <ProtectedRoute>
+                <Refer />
+              </ProtectedRoute>
+            } />
+            <Route path="/notifications" element={
+              <ProtectedRoute>
+                <NotificationsPage />
               </ProtectedRoute>
             } />
             <Route path="/reset-password" element={<ResetPassword />} />

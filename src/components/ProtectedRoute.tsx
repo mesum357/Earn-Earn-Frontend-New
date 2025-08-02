@@ -10,14 +10,11 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, loading, networkError, checkAuth, retryConnection } = useAuth();
+  const { user, loading, networkError, retryConnection } = useAuth();
   const location = useLocation();
 
-  // Re-verify authentication when component mounts
-  useEffect(() => {
-    console.log('ProtectedRoute: Verifying authentication status');
-    checkAuth();
-  }, [checkAuth]);
+  // Note: We don't need to call checkAuth here as the AuthContext
+  // already handles authentication checking on mount and periodically
 
   // Show network error if there's a connectivity issue
   if (networkError && !loading) {
