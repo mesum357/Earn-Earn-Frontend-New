@@ -137,19 +137,19 @@ export function WithdrawPage() {
 
   const conditions = [
     {
-      label: "Deposit $10 minimum",
+      label: "Deposit minimum $10",
       met: requirements?.requirements.deposit.met || false,
-      description: `Current deposit: $${requirements?.requirements.deposit.completed || 0}/$10`,
+      description: `Current deposit: $${requirements?.requirements.deposit.completed || 0} (minimum $10 required)`,
     },
     {
-      label: "Refer 2+ friends (15-day period)",
+      label: "Refer 1 confirmed friend (every 15 days)",
       met: requirements?.requirements.referrals.met || false,
-      description: `Current referrals: ${requirements?.requirements.referrals.completed || 0}/2`,
+      description: `Confirmed referrals this period: ${requirements?.requirements.referrals.completed || 0}/1`,
     },
     {
-      label: "Participate in Lucky Draw (monthly)",
+      label: "Participate in Lucky Draw (every 15 days)",
       met: requirements?.requirements.luckyDraw.met || false,
-      description: `Lucky draw entries: ${requirements?.requirements.luckyDraw.completed || 0}/1`,
+      description: `Lucky draw participation this period: ${requirements?.requirements.luckyDraw.completed || 0}/1`,
     },
   ]
 
@@ -196,12 +196,12 @@ export function WithdrawPage() {
           <CardHeader>
             <CardTitle>Withdrawal Requirements</CardTitle>
             <CardDescription>
-              You must meet all conditions below to withdraw funds
+              You must meet all conditions below to withdraw funds. Requirements reset every 15 days.
               {requirements && (
                 <span className="block text-sm text-blue-600 mt-1">
                   {requirements.daysLeft > 0 
-                    ? `${requirements.daysLeft} days left in current period`
-                    : 'Period ended - requirements reset'
+                    ? `${requirements.daysLeft} days left in current 15-day period`
+                    : '15-day period ended - requirements reset'
                   }
                 </span>
               )}
@@ -242,11 +242,26 @@ export function WithdrawPage() {
                   <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 mr-2 flex-shrink-0" />
                   <div className="text-sm text-red-800">
                     <p className="font-medium mb-1">Balance Reset</p>
-                    <p>Your balance was reset because you didn't meet the requirements in the previous period.</p>
+                    <p>Your balance was reset to $0 because you didn't meet the requirements in the previous 15-day period.</p>
                   </div>
                 </div>
               </div>
             )}
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-4">
+              <div className="flex items-start">
+                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 mr-2 flex-shrink-0" />
+                <div className="text-sm text-amber-800">
+                  <p className="font-medium mb-2">⚠️ Important: Withdrawal Requirements</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>Minimum deposit:</strong> You must have deposited at least $10</li>
+                    <li><strong>Referral requirement:</strong> Refer 1 friend who deposits $10 every 15 days</li>
+                    <li><strong>Lucky draw:</strong> Participate in the lucky draw once every 15 days</li>
+                    <li className="text-red-700 font-medium"><strong>Failure to meet requirements will reset your balance to $0</strong></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
