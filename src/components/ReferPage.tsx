@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/contexts/AuthContext"
-import { Users, Copy, CheckCircle, Share2, DollarSign, UserPlus, Gift, TrendingUp } from "lucide-react"
+import { Users, Copy, CheckCircle, Share2, UserPlus, TrendingUp } from "lucide-react"
 import api from "@/lib/axios"
 
 export function ReferPage() {
@@ -18,8 +18,6 @@ export function ReferPage() {
 
   // Get the current domain for the referral link
   const currentDomain = window.location.origin
-  const referralBonus = 5.0
-  const secondTierBonus = 1.0
 
   // Calculate referral link dynamically based on loaded data
   const getReferralLink = () => {
@@ -69,7 +67,7 @@ export function ReferPage() {
     if (navigator.share) {
       navigator.share({
         title: "Join TaskEarn and Start Earning!",
-        text: "I'm earning money completing simple tasks on TaskEarn. Join me and get a $5 bonus!",
+        text: "I'm earning money completing simple tasks on TaskEarn. Join me!",
         url: getReferralLink(),
       })
     } else {
@@ -85,22 +83,10 @@ export function ReferPage() {
       color: "text-blue-600",
     },
     {
-      title: "Referral Earnings",
-      value: `$${((referralStats?.totalReferrals || 0) * referralBonus).toFixed(2)}`,
-      icon: DollarSign,
-      color: "text-green-600",
-    },
-    {
       title: "This Month",
       value: referralStats?.thisMonthReferrals || 0,
       icon: TrendingUp,
       color: "text-purple-600",
-    },
-    {
-      title: "Pending Bonuses",
-      value: `$${((referralStats?.pendingReferrals || 0) * referralBonus).toFixed(2)}`,
-      icon: Gift,
-      color: "text-orange-600",
     },
   ]
 
@@ -110,13 +96,13 @@ export function ReferPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Refer Friends</h1>
-        <p className="text-gray-600 mt-2">Earn ${referralBonus} for each friend you refer</p>
+        <p className="text-gray-600 mt-2">Invite friends to join TaskEarn</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {loading ? (
-          Array.from({ length: 4 }).map((_, index) => (
+          Array.from({ length: 2 }).map((_, index) => (
             <Card key={index}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -149,7 +135,7 @@ export function ReferPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         {/* Referral Link */}
         <Card>
           <CardHeader>
@@ -157,7 +143,7 @@ export function ReferPage() {
               <Share2 className="h-5 w-5 mr-2" />
               Your Referral Link
             </CardTitle>
-            <CardDescription>Share this link with friends to earn bonuses</CardDescription>
+            <CardDescription>Share this link with friends</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -185,61 +171,6 @@ export function ReferPage() {
                 <UserPlus className="h-4 w-4 mr-2" />
                 Invite Friends
               </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* How It Works */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How It Works</CardTitle>
-            <CardDescription>Simple steps to earn referral bonuses</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-blue-600">1</span>
-                </div>
-                <div>
-                  <h4 className="font-medium">Share Your Link</h4>
-                  <p className="text-sm text-gray-600">Send your unique referral link to friends and family</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
-                <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-green-600">2</span>
-                </div>
-                <div>
-                  <h4 className="font-medium">Friend Signs Up</h4>
-                  <p className="text-sm text-gray-600">They register using your link and get a $5 bonus</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
-                <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-purple-600">3</span>
-                </div>
-                <div>
-                  <h4 className="font-medium">You Earn Bonus</h4>
-                  <p className="text-sm text-gray-600">You receive $5 when they make their first deposit</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <h4 className="font-medium text-green-900 mb-2">Bonus Structure</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-green-800">Direct Referral:</span>
-                  <span className="font-medium text-green-900">$5.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-green-800">Second Tier:</span>
-                  <span className="font-medium text-green-900">$1.00</span>
-                </div>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -273,9 +204,6 @@ export function ReferPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-green-600">
-                      ${referral.status === 'completed' ? '5.00' : '0.00'}
-                    </p>
                     <Badge variant={referral.status === "completed" ? "default" : "secondary"}>
                       {referral.status}
                     </Badge>
@@ -286,7 +214,7 @@ export function ReferPage() {
               <div className="text-center py-8">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600">No referrals yet</p>
-                <p className="text-sm text-gray-500">Share your referral link to start earning!</p>
+                <p className="text-sm text-gray-500">Share your referral link to start referring friends!</p>
               </div>
             )}
           </div>
