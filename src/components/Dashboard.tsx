@@ -1,14 +1,45 @@
 "use client"
 
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/contexts/AuthContext"
-import { CreditCard, CheckSquare, Users, Gift, Lock, TrendingUp, DollarSign, Activity } from "lucide-react"
+import { CreditCard, CheckSquare, Users, Gift, Lock, TrendingUp, DollarSign, Activity, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 
 export function Dashboard() {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const [dashboardStats, setDashboardStats] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  // Fetch dashboard statistics
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
+        const response = await axios.get(`${apiUrl}/api/user/dashboard-stats`, {
+          withCredentials: true
+        })
+        
+        if (response.data.success) {
+          setDashboardStats(response.data.stats)
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (user) {
+      fetchDashboardStats()
+    } else {
+      setLoading(false)
+    }
+  }, [user])
 
   const stats = [
     {
@@ -16,24 +47,28 @@ export function Dashboard() {
       value: `$${user?.balance || 0}`,
       icon: DollarSign,
       color: "text-green-600",
+      redirectPath: "/withdraw",
     },
     {
       title: "Referrals",
-      value: user?.referralCount || 0,
+      value: dashboardStats?.totalReferrals || 0,
       icon: Users,
       color: "text-blue-600",
+      redirectPath: "/refer",
     },
     {
       title: "Lucky Draw Entries",
-      value: user?.luckyDrawEntries || 0,
+      value: dashboardStats?.luckyDrawParticipations || 0,
       icon: Gift,
       color: "text-purple-600",
+      redirectPath: "/lucky-draw",
     },
     {
       title: "Tasks Completed",
-      value: "12",
+      value: dashboardStats?.completedTasks || 0,
       icon: CheckSquare,
       color: "text-orange-600",
+      redirectPath: "/tasks",
     },
   ]
 
@@ -98,22 +133,43 @@ export function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon
-          return (
+        {loading ? (
+          // Loading skeleton
+          Array.from({ length: 4 }).map((_, index) => (
             <Card key={index}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
                   </div>
-                  <Icon className={`h-8 w-8 ${stat.color}`} />
+                  <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
                 </div>
               </CardContent>
             </Card>
-          )
-        })}
+          ))
+        ) : (
+          stats.map((stat, index) => {
+            const Icon = stat.icon
+            return (
+              <Card 
+                key={index} 
+                className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
+                onClick={() => navigate(stat.redirectPath)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                    </div>
+                    <Icon className={`h-8 w-8 ${stat.color}`} />
+                  </div>
+                </div>
+              </Card>
+            )
+          })
+        )}
       </div>
 
       {/* Quick Actions */}
