@@ -16,7 +16,7 @@ const Navbar = () => {
   const navigationItems = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Dashboard', href: '/dashboard', icon: Gift },
-    { name: 'Tasks', href: '/tasks', icon: CheckSquare, locked: (user?.balance || 0) < 10 },
+    { name: 'Tasks', href: '/tasks', icon: CheckSquare, locked: !user?.hasDeposited },
     { name: 'Refer Friends', href: '/refer', icon: Users },
     { name: 'Notifications', href: '/notifications', icon: Bell },
     { name: 'Deposit', href: '/deposit', icon: CreditCard },
@@ -98,9 +98,9 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10 border-2 border-primary/20">
-                      <AvatarImage src="/placeholder-avatar.jpg" alt={user.name || user.username} />
+                      <AvatarImage src="/placeholder-avatar.jpg" alt={user.username} />
                       <AvatarFallback className="bg-gradient-primary text-white font-semibold">
-                        {(user.name || user.username || user.email).charAt(0).toUpperCase()}
+                        {(user.username || user.email).charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -108,7 +108,7 @@ const Navbar = () => {
                 <DropdownMenuContent className="w-56" align="end">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name || user.username}</p>
+                      <p className="text-sm font-medium leading-none">{user.username}</p>
                       <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                     </div>
                   </DropdownMenuLabel>

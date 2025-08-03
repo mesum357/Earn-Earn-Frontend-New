@@ -232,7 +232,7 @@ export function DepositPage() {
                 step="0.01"
               />
               <p className="text-sm text-gray-600">
-                Minimum: ${minDeposit} | Current Balance: ${user?.balance || 0}
+                Minimum: ${minDeposit} | Current Balance: ${user?.balance || 0} | Tasks Unlocked: {user?.hasDeposited ? 'Yes' : 'No'}
               </p>
             </div>
 
@@ -322,6 +322,8 @@ export function DepositPage() {
                   <ul className="list-disc list-inside space-y-1">
                     <li>Only send USDT (TRC-20) to this address</li>
                     <li>Minimum deposit: ${minDeposit}</li>
+                    <li>Initial $10 deposit unlocks tasks but doesn't add to balance</li>
+                    <li>Subsequent deposits add to your balance normally</li>
                     <li>Deposits are processed within 10-30 minutes</li>
                     <li>Double-check the address before sending</li>
                   </ul>
@@ -353,7 +355,7 @@ export function DepositPage() {
                 </div>
                 <div>
                   <h4 className="font-medium">Unlock Task Earning</h4>
-                  <p className="text-sm text-gray-600">Access high-paying tasks and start earning immediately</p>
+                  <p className="text-sm text-gray-600">Initial $10 deposit unlocks tasks (doesn't add to balance)</p>
                 </div>
               </div>
 
@@ -390,11 +392,17 @@ export function DepositPage() {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
               <h4 className="font-medium text-blue-900 mb-2">Current Status</h4>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-blue-800">Account Status:</span>
-                <Badge variant={(user?.balance || 0) >= 10 ? "default" : "secondary"}>
-                  {(user?.balance || 0) >= 10 ? "Premium" : "Basic"}
-                </Badge>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-blue-800">Tasks Unlocked:</span>
+                  <Badge variant={user?.hasDeposited ? "default" : "secondary"}>
+                    {user?.hasDeposited ? "Yes" : "No"}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-blue-800">Account Balance:</span>
+                  <span className="text-sm font-medium text-blue-900">${user?.balance?.toFixed(2) || '0.00'}</span>
+                </div>
               </div>
             </div>
           </CardContent>

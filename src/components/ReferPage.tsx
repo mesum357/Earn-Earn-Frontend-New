@@ -205,7 +205,7 @@ export function ReferPage() {
                   </div>
                   <div className="text-right">
                     <Badge variant={referral.status === "completed" ? "default" : "secondary"}>
-                      {referral.status}
+                      {referral.status === "completed" ? "Approved" : "Pending"}
                     </Badge>
                   </div>
                 </div>
