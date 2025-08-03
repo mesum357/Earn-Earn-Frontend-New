@@ -47,10 +47,10 @@ export function Dashboard() {
     },
     {
       title: "View Tasks",
-      description: (user?.balance || 0) >= 10 ? "Complete tasks to earn" : "Need $10 balance to unlock",
-      icon: (user?.balance || 0) >= 10 ? CheckSquare : Lock,
-      link: (user?.balance || 0) >= 10 ? "/tasks" : "/deposit",
-      color: (user?.balance || 0) >= 10 ? "bg-blue-500" : "bg-gray-400",
+      description: user?.hasDeposited ? "Complete tasks to earn" : "Need $10 deposit to unlock",
+      icon: user?.hasDeposited ? CheckSquare : Lock,
+      link: user?.hasDeposited ? "/tasks" : "/deposit",
+      color: user?.hasDeposited ? "bg-blue-500" : "bg-gray-400",
     },
     {
       title: "Refer Friends",
@@ -76,7 +76,7 @@ export function Dashboard() {
       </div>
 
       {/* Deposit Alert */}
-      {(user?.balance || 0) < 10 && (
+      {!user?.hasDeposited && (
         <Card className="mb-8 border-orange-200 bg-orange-50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -84,12 +84,12 @@ export function Dashboard() {
                 <Lock className="h-8 w-8 text-orange-600 mr-4" />
                 <div>
                   <h3 className="text-lg font-semibold text-orange-800">Tasks Locked</h3>
-                  <p className="text-orange-700">You need a minimum balance of $10 to unlock task earning features.</p>
-                  <p className="text-orange-600 text-sm mt-1">Current Balance: ${user?.balance?.toFixed(2) || '0.00'}</p>
+                  <p className="text-orange-700">You need to make a minimum $10 deposit to unlock task earning features.</p>
+                  <p className="text-orange-600 text-sm mt-1">Current Balance: ${user?.balance?.toFixed(2) || '0.00'} (First $10 deposit unlocks tasks)</p>
                 </div>
               </div>
               <Link to="/deposit">
-                <Button className="bg-orange-600 hover:bg-orange-700">Deposit Now</Button>
+                <Button className="bg-orange-600 hover:bg-orange-700">Make Deposit</Button>
               </Link>
             </div>
           </CardContent>
@@ -151,7 +151,7 @@ export function Dashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {(user?.balance || 0) >= 10 ? (
+            {user?.hasDeposited ? (
               <>
                 <div className="flex items-center justify-between py-3 border-b">
                   <div className="flex items-center">
