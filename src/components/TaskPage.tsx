@@ -32,7 +32,8 @@ export function TaskPage() {
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false)
   const [submitForm, setSubmitForm] = useState({
     screenshotUrl: "",
-    notes: ""
+    notes: "",
+    url: ""
   })
   const [uploadingScreenshot, setUploadingScreenshot] = useState(false)
 
@@ -125,7 +126,7 @@ export function TaskPage() {
         
         setIsSubmitDialogOpen(false)
         setSelectedTask(null)
-        setSubmitForm({ screenshotUrl: "", notes: "" })
+        setSubmitForm({ screenshotUrl: "", notes: "", url: "" })
         
         alert('Task submitted successfully! Please wait for admin review.')
       }
@@ -289,7 +290,7 @@ export function TaskPage() {
                       <DialogHeader>
                         <DialogTitle>Submit Task Completion</DialogTitle>
                         <DialogDescription>
-                          Upload a screenshot as proof and add any notes about your completion.
+                          Upload a screenshot as proof, add the URL where you completed the task, and include any notes about your completion.
                         </DialogDescription>
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
@@ -317,6 +318,16 @@ export function TaskPage() {
                               ✓ Screenshot uploaded successfully
                             </div>
                           )}
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="url">URL (Optional)</Label>
+                          <Input
+                            id="url"
+                            type="url"
+                            placeholder="Enter the URL where you completed the task..."
+                            value={submitForm.url}
+                            onChange={(e) => setSubmitForm(prev => ({ ...prev, url: e.target.value }))}
+                          />
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="notes">Notes (Optional)</Label>
