@@ -392,8 +392,8 @@ export function DepositPage() {
               <h4 className="font-medium text-blue-900 mb-2">Current Status</h4>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-blue-800">Account Status:</span>
-                <Badge variant={user?.hasDeposited ? "default" : "secondary"}>
-                  {user?.hasDeposited ? "Premium" : "Basic"}
+                <Badge variant={(user?.balance || 0) >= 10 ? "default" : "secondary"}>
+                  {(user?.balance || 0) >= 10 ? "Premium" : "Basic"}
                 </Badge>
               </div>
             </div>

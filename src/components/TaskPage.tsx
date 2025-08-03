@@ -161,18 +161,25 @@ export function TaskPage() {
     }
   }
 
-  if (!user?.hasDeposited) {
+  if ((user?.balance || 0) < 10) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
           <Lock className="h-16 w-16 mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Tasks Locked</h1>
           <p className="text-gray-600 mb-6">
-            You need to make a minimum deposit of $10 to unlock task earning features.
+            You need to have a minimum balance of $10 to unlock task earning features.
           </p>
-          <Button asChild>
-            <a href="/deposit">Make a Deposit</a>
-          </Button>
+          <div className="space-y-4">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-sm text-yellow-800">
+                Current Balance: <span className="font-semibold">${user?.balance?.toFixed(2) || '0.00'}</span>
+              </p>
+            </div>
+            <Button asChild>
+              <a href="/deposit">Make a Deposit</a>
+            </Button>
+          </div>
         </div>
       </div>
     )

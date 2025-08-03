@@ -16,7 +16,7 @@ const Navbar = () => {
   const navigationItems = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Dashboard', href: '/dashboard', icon: Gift },
-                          { name: 'Tasks', href: '/tasks', icon: CheckSquare, locked: !user?.hasDeposited },
+    { name: 'Tasks', href: '/tasks', icon: CheckSquare, locked: (user?.balance || 0) < 10 },
     { name: 'Refer Friends', href: '/refer', icon: Users },
     { name: 'Notifications', href: '/notifications', icon: Bell },
     { name: 'Deposit', href: '/deposit', icon: CreditCard },
@@ -71,7 +71,7 @@ const Navbar = () => {
                   <span>{item.name}</span>
                   {isLocked && (
                     <Badge variant="secondary" className="text-xs px-1 py-0">
-                      Locked
+                      Need $10
                     </Badge>
                   )}
                 </Link>
@@ -196,7 +196,7 @@ const Navbar = () => {
                     <span>{item.name}</span>
                     {isLocked && (
                       <Badge variant="secondary" className="text-xs px-1 py-0 ml-auto">
-                        Locked
+                        Need $10
                       </Badge>
                     )}
                   </Link>
