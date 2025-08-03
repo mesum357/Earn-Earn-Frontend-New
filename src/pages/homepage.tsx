@@ -43,7 +43,7 @@ const Dashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
   const [entryUploadUrl, setEntryUploadUrl] = useState<string | null>(null);
   const [isUploadingEntry, setIsUploadingEntry] = useState(false);
-  const [participationStatus, setParticipationStatus] = useState<{ [prizeId: number]: 'none' | 'waiting' | 'submitted' | 'again' }>({});
+  const [participationStatus, setParticipationStatus] = useState<{ [prizeId: string]: 'none' | 'waiting' | 'submitted' | 'again' }>({});
   const [notifications, setNotifications] = useState<{ id?: number; title: string; message: string; createdAt: string; read?: boolean; type?: string }[]>([]);
   const { toast } = useToast();
   const { user, logout } = useAuth();
@@ -52,69 +52,90 @@ const Dashboard = () => {
   // Example Binance UID
   const exampleBinanceUID = '1048420929';
 
-  const prizes = [
-    {
-      id: 1,
-      title: 'Mystery Gift Box',
-      price: '$2',
-      image: giftBox,
-      participants: 1247,
-      timeLeft: '2h 15m',
-      description:
-        'Surprise gift worth $10-50! Could be electronics, gift cards, or exclusive merchandise. Every box contains something special - perfect for trying your luck without breaking the bank.',
-      features: [
-        'Guaranteed value $10+',
-        'Surprise element',
-        'Fast shipping',
-        'Perfect starter prize',
-      ],
-      gradient: 'from-primary to-primary-light',
-    },
-    {
-      id: 2,
-      title: 'iPhone 15 Pro',
-      price: '$5',
-      image: phonePrize,
-      participants: 3891,
-      timeLeft: '5h 42m',
-      description:
-        'Brand new iPhone 15 Pro 256GB in your choice of color. Unlocked and ready to use with full manufacturer warranty. This is the latest model with all premium features.',
-      features: [
-        '256GB Storage',
-        'All colors available',
-        'Factory unlocked',
-        'Full warranty',
-      ],
-      gradient: 'from-accent to-accent/80',
-    },
-  ];
+  const [prizes, setPrizes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchParticipations = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/my-participations`, { withCredentials: true });
       const participations = response.data.participations || [];
-      const newStatus: { [prizeId: number]: 'none' | 'waiting' | 'submitted' | 'again' } = {};
+      const newStatus: { [prizeId: string]: 'none' | 'waiting' | 'submitted' | 'again' } = {};
+      
+      // Handle both old prize-based participations and new lucky draw participations
       participations.forEach((p: any) => {
+        const participationId = p.luckyDrawId || p.prizeId;
         if (p.submittedButton === true) {
-          newStatus[p.prizeId] = 'submitted';
+          newStatus[participationId] = 'submitted';
         } else if (p.submittedButton === false) {
-          newStatus[p.prizeId] = 'again';
+          newStatus[participationId] = 'again';
         } else if (p.submittedButton === null) {
           // Pending approval
-          newStatus[p.prizeId] = 'waiting';
+          newStatus[participationId] = 'waiting';
         } else {
-          newStatus[p.prizeId] = 'none';
+          newStatus[participationId] = 'none';
         }
       });
       setParticipationStatus(newStatus);
     } catch (err) {
-      toast({ title: 'Error', description: 'Failed to fetch participations', variant: 'destructive' }); 
+      console.error('Failed to fetch participations:', err);
+      // Don't show error toast for this as it's not critical
+    }
+  };
+
+  const fetchLuckyDraws = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/lucky-draws`);
+      const luckyDraws = response.data.luckyDraws || [];
+      
+      // Transform lucky draws to match the frontend format
+      const transformedPrizes = luckyDraws.map((draw: any) => {
+        const now = new Date();
+        const endDate = new Date(draw.endDate);
+        const timeLeft = Math.max(0, endDate.getTime() - now.getTime());
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        
+        return {
+          id: draw._id,
+          title: draw.title,
+          price: `$${draw.entryFee}`,
+          image: draw.prize.toLowerCase().includes('iphone') ? phonePrize : giftBox,
+          participants: draw.currentParticipants,
+          maxParticipants: draw.maxParticipants,
+          timeLeft: `${hours}h ${minutes}m`,
+          description: draw.description,
+          features: [
+            `Max ${draw.maxParticipants} participants`,
+            `Entry fee: $${draw.entryFee}`,
+            `Prize: ${draw.prize}`,
+            'Fair random selection'
+          ],
+          gradient: draw.prize.toLowerCase().includes('iphone') ? 'from-accent to-accent/80' : 'from-primary to-primary-light',
+          status: draw.status,
+          startDate: draw.startDate,
+          endDate: draw.endDate
+        };
+      });
+      
+      setPrizes(transformedPrizes);
+    } catch (err) {
+      console.error('Failed to fetch lucky draws:', err);
+      // Fallback to empty array
+      setPrizes([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
+    // Fetch lucky draws on component mount
+    fetchLuckyDraws();
+    
     if (user) {
       fetchParticipations();
+    }
+    
     // Fetch notifications
     const fetchNotifications = async () => {
       try {
@@ -137,12 +158,15 @@ const Dashboard = () => {
       }
     };
     fetchNotifications();
-    // POLLING: Refetch participations every 5 seconds
+    
+    // POLLING: Refetch data every 30 seconds
     const interval = setInterval(() => {
-      fetchParticipations();
-    }, 5000);
+      fetchLuckyDraws();
+      if (user) {
+        fetchParticipations();
+      }
+    }, 30000);
     return () => clearInterval(interval);
-    }
   }, [user]);
 
   const handleParticipate = (prize: any) => {
@@ -177,31 +201,29 @@ const Dashboard = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      // Use the new lucky draw participation endpoint
       await axios.post(
-        `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/participate`,
+        `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/lucky-draws/${selectedPrize?.id}/participate`,
         {
-          prizeId: selectedPrize?.id,
-          prizeTitle: selectedPrize?.title,
-          binanceUID,
-          receiptUrl: entryUploadUrl
+          walletAddress: binanceUID // Using binanceUID as wallet address for now
         },
         { withCredentials: true }
       );
       // After submit, re-fetch participations to update status
       await fetchParticipations();
-    } catch (err) {
-      toast({ title: 'Error', description: 'Failed to save participation.', variant: 'destructive' });
-    }
-    setTimeout(() => {
+      toast({
+        title: 'Entry submitted!',
+        description: `You're now entered in the ${selectedPrize?.title} draw. Good luck!`,
+      });
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.error || 'Failed to save participation.';
+      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
+    } finally {
       setIsSubmitting(false);
       setSelectedPrize(null);
       setBinanceUID(exampleBinanceUID);
       setReceipt(null);
-      toast({
-        title: 'Entry submitted!',
-        description: `You're now entered in the ${selectedPrize.title} draw. Good luck!`,
-      });
-    }, 1500);
+    }
   };
 
   // Copy Binance UID to clipboard
@@ -263,8 +285,35 @@ const Dashboard = () => {
         <div className="space-y-6">
           <h2 className="text-3xl font-bold text-foreground">Available Prizes</h2>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {prizes.map((prize) => (
+          {loading ? (
+            <div className="grid md:grid-cols-2 gap-8">
+              {[1, 2].map((i) => (
+                <Card key={i} className="lucky-card group overflow-hidden">
+                  <div className="relative h-64 mb-6 bg-gray-200 animate-pulse"></div>
+                  <CardHeader className="pb-4">
+                    <div className="h-8 bg-gray-200 rounded animate-pulse mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      {[1, 2, 3, 4].map((j) => (
+                        <div key={j} className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                      ))}
+                    </div>
+                    <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : prizes.length === 0 ? (
+            <div className="text-center py-12">
+              <Gift className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Active Lucky Draws</h3>
+              <p className="text-muted-foreground">Check back later for new exciting prizes!</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-8">
+              {prizes.map((prize) => (
               <Card key={prize.id} className="lucky-card group overflow-hidden">
                 <div className="relative h-64 mb-6">
                   <img
@@ -440,7 +489,8 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
