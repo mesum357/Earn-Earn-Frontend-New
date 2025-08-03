@@ -37,7 +37,7 @@ import Navbar from '@/components/Navbar';
 
 const Dashboard = () => {
   const [selectedPrize, setSelectedPrize] = useState<any>(null);
-  const [walletAddress, setWalletAddress] = useState<string>('0x1234abcd5678efgh9012ijkl3456mnop7890qrst');
+  const [binanceUID, setBinanceUID] = useState<string>('1048420929');
   const [receipt, setReceipt] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNotification, setShowNotification] = useState(true);
@@ -49,8 +49,8 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Example crypto wallet address
-  const exampleWallet = '0x1234abcd5678efgh9012ijkl3456mnop7890qrst';
+  // Example Binance UID
+  const exampleBinanceUID = '1048420929';
 
   const prizes = [
     {
@@ -182,7 +182,7 @@ const Dashboard = () => {
         {
           prizeId: selectedPrize?.id,
           prizeTitle: selectedPrize?.title,
-          walletAddress,
+          binanceUID,
           receiptUrl: entryUploadUrl
         },
         { withCredentials: true }
@@ -195,7 +195,7 @@ const Dashboard = () => {
     setTimeout(() => {
       setIsSubmitting(false);
       setSelectedPrize(null);
-      setWalletAddress(exampleWallet);
+      setBinanceUID(exampleBinanceUID);
       setReceipt(null);
       toast({
         title: 'Entry submitted!',
@@ -204,10 +204,10 @@ const Dashboard = () => {
     }, 1500);
   };
 
-  // Copy wallet address to clipboard
-  const handleCopyWallet = () => {
-    navigator.clipboard.writeText(walletAddress);
-    toast({ title: 'Copied!', description: 'Wallet address copied to clipboard.' });
+  // Copy Binance UID to clipboard
+  const handleCopyBinanceUID = () => {
+    navigator.clipboard.writeText(binanceUID);
+    toast({ title: 'Copied!', description: 'Binance UID copied to clipboard.' });
   };
 
   // Notification handlers
@@ -352,12 +352,12 @@ const Dashboard = () => {
 
                       <form onSubmit={handleSubmitEntry} className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="wallet">Wallet Address</Label>
+                          <Label htmlFor="binanceUID">Binance UID</Label>
                           <div className="relative">
                             <Input
-                              id="wallet"
-                              placeholder="Enter your wallet address"
-                              value={walletAddress}
+                              id="binanceUID"
+                              placeholder="Enter your Binance UID"
+                              value={binanceUID}
                               readOnly
                               className="h-12 pr-12"
                             />
@@ -366,13 +366,13 @@ const Dashboard = () => {
                               variant="ghost"
                               size="sm"
                               className="absolute right-0 top-0 h-12 px-3 hover:bg-transparent"
-                              onClick={handleCopyWallet}
+                              onClick={handleCopyBinanceUID}
                             >
                               <ClipboardCopy className="h-4 w-4 text-muted-foreground" />
                             </Button>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            This is your crypto wallet address for prize payout.
+                            This is your Binance UID for prize payout.
                           </p>
                         </div>
 
