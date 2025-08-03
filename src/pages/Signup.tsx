@@ -108,8 +108,13 @@ const Signup = () => {
         title: 'Account created!',
         description: response.data.message || 'Please check your email to verify your account.',
       });
-      // Navigate to verify email page instead of login
-      navigate('/verify-email');
+      
+      // Navigate based on whether user was auto-verified
+      if (response.data.autoVerified) {
+        navigate('/login');
+      } else {
+        navigate('/verify-email');
+      }
     } catch (error: unknown) {
       setIsLoading(false);
       let errorMsg = 'Signup failed. Please try again.';
