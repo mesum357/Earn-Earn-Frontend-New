@@ -165,7 +165,7 @@ export function Dashboard() {
                     </div>
                     <Icon className={`h-8 w-8 ${stat.color}`} />
                   </div>
-                </div>
+                </CardContent>
               </Card>
             )
           })
