@@ -21,6 +21,7 @@ interface Task {
   category: string
   timeEstimate: string
   requirements: string[]
+  url?: string
 }
 
 export function TaskPage() {
@@ -32,8 +33,7 @@ export function TaskPage() {
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false)
   const [submitForm, setSubmitForm] = useState({
     screenshotUrl: "",
-    notes: "",
-    url: ""
+    notes: ""
   })
   const [uploadingScreenshot, setUploadingScreenshot] = useState(false)
 
@@ -126,7 +126,7 @@ export function TaskPage() {
         
         setIsSubmitDialogOpen(false)
         setSelectedTask(null)
-        setSubmitForm({ screenshotUrl: "", notes: "", url: "" })
+        setSubmitForm({ screenshotUrl: "", notes: "" })
         
         alert('Task submitted successfully! Please wait for admin review.')
       }
@@ -274,6 +274,20 @@ export function TaskPage() {
                   ))}
                 </ul>
               </div>
+              
+              {task.url && (
+                <div className="space-y-2 mb-4">
+                  <h4 className="font-medium text-sm">Task URL:</h4>
+                  <a 
+                    href={task.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 underline text-sm break-all"
+                  >
+                    {task.url}
+                  </a>
+                </div>
+              )}
 
               <div className="flex space-x-2">
                  {(task.status === "available" || task.status === "rejected") && (
@@ -290,7 +304,7 @@ export function TaskPage() {
                       <DialogHeader>
                         <DialogTitle>Submit Task Completion</DialogTitle>
                         <DialogDescription>
-                          Upload a screenshot as proof, add the URL where you completed the task, and include any notes about your completion.
+                          Upload a screenshot as proof and add any notes about your completion.
                         </DialogDescription>
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
@@ -319,16 +333,7 @@ export function TaskPage() {
                             </div>
                           )}
                         </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="url">URL (Optional)</Label>
-                          <Input
-                            id="url"
-                            type="url"
-                            placeholder="Enter the URL where you completed the task..."
-                            value={submitForm.url}
-                            onChange={(e) => setSubmitForm(prev => ({ ...prev, url: e.target.value }))}
-                          />
-                        </div>
+
                         <div className="grid gap-2">
                           <Label htmlFor="notes">Notes (Optional)</Label>
                           <Textarea
