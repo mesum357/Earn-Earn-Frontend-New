@@ -26,6 +26,7 @@ import {
   CheckCircle,
   ClipboardCopy,
   LogOut,
+  RefreshCw,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -283,7 +284,19 @@ const Dashboard = () => {
 
         {/* Prize Cards */}
         <div className="space-y-6">
-          <h2 className="text-3xl font-bold text-foreground">Available Prizes</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-3xl font-bold text-foreground">Available Prizes</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchLuckyDraws}
+              disabled={loading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
 
           {loading ? (
             <div className="grid md:grid-cols-2 gap-8">
