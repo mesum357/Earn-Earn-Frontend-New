@@ -24,7 +24,7 @@ export function DepositPage() {
   const [isUploading, setIsUploading] = useState(false)
   const [isLoadingDeposits, setIsLoadingDeposits] = useState(false)
 
-  const binanceAddress = "TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE"
+  const binanceAddress = "1048420929"
   const minDeposit = 10
 
   const handleCopyAddress = () => {
