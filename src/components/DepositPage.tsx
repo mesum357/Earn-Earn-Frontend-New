@@ -233,6 +233,11 @@ export function DepositPage() {
               />
               <p className="text-sm text-gray-600">
                 Minimum: ${minDeposit} | Current Balance: ${user?.balance || 0} | Tasks Unlocked: {user?.hasDeposited ? 'Yes' : 'No'}
+                {!user?.hasDeposited && (
+                  <span className="block text-orange-600 font-medium mt-1">
+                    ⚠️ First $10 deposit unlocks tasks but doesn't add to balance
+                  </span>
+                )}
               </p>
             </div>
 
@@ -322,7 +327,7 @@ export function DepositPage() {
                   <ul className="list-disc list-inside space-y-1">
                     <li>Only send USDT (TRC-20) to this address</li>
                     <li>Minimum deposit: ${minDeposit}</li>
-                    <li>Initial $10 deposit unlocks tasks but doesn't add to balance</li>
+                    <li><strong>First $10 deposit unlocks tasks but doesn't add to balance</strong></li>
                     <li>Subsequent deposits add to your balance normally</li>
                     <li>Deposits are processed within 10-30 minutes</li>
                     <li>Double-check the address before sending</li>
@@ -355,7 +360,7 @@ export function DepositPage() {
                 </div>
                 <div>
                   <h4 className="font-medium">Unlock Task Earning</h4>
-                  <p className="text-sm text-gray-600">Initial $10 deposit unlocks tasks (doesn't add to balance)</p>
+                  <p className="text-sm text-gray-600">First $10 deposit unlocks tasks (doesn't add to balance)</p>
                 </div>
               </div>
 

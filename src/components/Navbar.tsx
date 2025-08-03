@@ -60,7 +60,7 @@ const Navbar = () => {
               return (
                 <Link
                   key={item.name}
-                  to={isLocked ? '/deposit' : item.href}
+                  to={item.href}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? 'bg-gradient-to-r from-primary/10 to-accent/10 text-primary border border-primary/20 shadow-soft'
@@ -184,7 +184,7 @@ const Navbar = () => {
                 return (
                   <Link
                     key={item.name}
-                    to={isLocked ? '/deposit' : item.href}
+                    to={item.href}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-gradient-to-r from-primary/10 to-accent/10 text-primary border border-primary/20'

@@ -205,8 +205,16 @@ export function ReferPage() {
                   </div>
                   <div className="text-right">
                     <Badge variant={referral.status === "completed" ? "default" : "secondary"}>
-                      {referral.status === "completed" ? "Approved" : "Pending"}
+                      {referral.status === "completed" ? "Completed" : "Pending"}
                     </Badge>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {referral.status === "completed" ? "Deposit confirmed" : "Waiting for $10 deposit"}
+                    </p>
+                    {referral.referred?.hasDeposited === false && (
+                      <p className="text-xs text-orange-500 mt-1">
+                        Hasn't made first deposit yet
+                      </p>
+                    )}
                   </div>
                 </div>
               ))

@@ -24,7 +24,7 @@ interface Task {
 }
 
 export function TaskPage() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [submittingTask, setSubmittingTask] = useState<string | null>(null)
@@ -67,7 +67,11 @@ export function TaskPage() {
 
   useEffect(() => {
     fetchTasks()
-  }, [])
+    // Refresh user data to get updated deposit status
+    if (refreshUser) {
+      refreshUser()
+    }
+  }, [refreshUser])
 
   // Handle screenshot upload
   const handleScreenshotUpload = async (file: File) => {
@@ -161,24 +165,39 @@ export function TaskPage() {
     }
   }
 
-  if ((user?.balance || 0) < 10) {
+  if (!user?.hasDeposited) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
           <Lock className="h-16 w-16 mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Tasks Locked</h1>
           <p className="text-gray-600 mb-6">
-            You need to have a minimum balance of $10 to unlock task earning features.
+            You need to make a minimum $10 deposit to unlock task earning features.
           </p>
           <div className="space-y-4">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-sm text-yellow-800">
-                Current Balance: <span className="font-semibold">${user?.balance?.toFixed(2) || '0.00'}</span>
+                Status: <span className="font-semibold">Tasks not unlocked yet</span>
+              </p>
+              <p className="text-sm text-yellow-800 mt-1">
+                Make a minimum $10 deposit to unlock tasks (first $10 is used for unlocking, additional amounts go to your balance)
               </p>
             </div>
-            <Button asChild>
-              <a href="/deposit">Make a Deposit</a>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Button asChild>
+                <a href="/deposit">Make Your First Deposit</a>
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  if (refreshUser) {
+                    refreshUser()
+                  }
+                }}
+              >
+                Refresh Status
+              </Button>
+            </div>
           </div>
         </div>
       </div>
