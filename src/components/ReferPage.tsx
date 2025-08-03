@@ -139,7 +139,7 @@ export function ReferPage() {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
         <p className="text-sm text-blue-800">
           <strong>Note:</strong> Total referrals and monthly counts include only confirmed referrals 
-          (users who have made their first $10 deposit).
+          (users who have made their first $10 deposit and had it confirmed by admin).
         </p>
       </div>
 
@@ -212,11 +212,11 @@ export function ReferPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <Badge variant={referral.status === "completed" ? "default" : "secondary"}>
-                      {referral.status === "completed" ? "Confirmed (Deposit Received)" : "Pending"}
+                    <Badge variant={referral.referred?.hasDeposited ? "default" : "secondary"}>
+                      {referral.referred?.hasDeposited ? "Confirmed (Deposit Received)" : "Pending"}
                     </Badge>
                     <p className="text-xs text-gray-500 mt-1">
-                      {referral.status === "completed" ? "$10 deposit confirmed" : "Waiting for $10 deposit"}
+                      {referral.referred?.hasDeposited ? "$10 deposit confirmed" : "Waiting for $10 deposit"}
                     </p>
                     {referral.referred?.hasDeposited === false && (
                       <p className="text-xs text-orange-500 mt-1">

@@ -144,7 +144,7 @@ export function WithdrawPage() {
     {
       label: "Refer 1 confirmed friend (every 15 days)",
       met: requirements?.requirements.referrals.met || false,
-      description: `Confirmed referrals this period: ${requirements?.requirements.referrals.completed || 0}/1`,
+      description: `Confirmed referrals this period: ${requirements?.requirements.referrals.completed || 0}/1 (friend must deposit $10 and have it confirmed)`,
     },
     {
       label: "Participate in Lucky Draw (every 15 days)",
@@ -255,7 +255,7 @@ export function WithdrawPage() {
                   <p className="font-medium mb-2">⚠️ Important: Withdrawal Requirements</p>
                   <ul className="list-disc list-inside space-y-1">
                     <li><strong>Minimum deposit:</strong> You must have deposited at least $10</li>
-                    <li><strong>Referral requirement:</strong> Refer 1 friend who deposits $10 every 15 days</li>
+                    <li><strong>Referral requirement:</strong> Refer 1 friend who deposits $10 and has it confirmed by admin every 15 days</li>
                     <li><strong>Lucky draw:</strong> Participate in the lucky draw once every 15 days</li>
                     <li className="text-red-700 font-medium"><strong>Failure to meet requirements will reset your balance to $0</strong></li>
                   </ul>
