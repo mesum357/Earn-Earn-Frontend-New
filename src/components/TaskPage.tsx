@@ -275,93 +275,96 @@ export function TaskPage() {
                 </ul>
               </div>
               
-              {task.url && (
-                <div className="space-y-2 mb-4">
-                  <h4 className="font-medium text-sm">Task URL:</h4>
-                  <a 
-                    href={task.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline text-sm break-all"
-                  >
-                    {task.url}
-                  </a>
-                </div>
-              )}
-
               <div className="flex space-x-2">
                  {(task.status === "available" || task.status === "rejected") && (
-                   <Dialog open={isSubmitDialogOpen} onOpenChange={setIsSubmitDialogOpen}>
-                     <DialogTrigger asChild>
-                  <Button
-                         onClick={() => setSelectedTask(task)}
-                    className="flex-1"
-                  >
-                         {task.status === "rejected" ? "Start Task Again" : "Start Task"}
+                   <>
+                     {task.url && (
+                       <Button
+                         asChild
+                         variant="outline"
+                         className="flex-1"
+                       >
+                         <a 
+                           href={task.url} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                         >
+                           Open Task
+                         </a>
                        </Button>
-                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Submit Task Completion</DialogTitle>
-                        <DialogDescription>
-                          Upload a screenshot as proof and add any notes about your completion.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="screenshot">Screenshot Proof</Label>
-                          <div className="flex items-center space-x-2">
-                            <Input
-                              id="screenshot"
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0]
-                                if (file) {
-                                  handleScreenshotUpload(file)
-                                }
-                              }}
-                              disabled={uploadingScreenshot}
-                            />
-                            {uploadingScreenshot && (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            )}
-                          </div>
-                          {submitForm.screenshotUrl && (
-                            <div className="text-sm text-green-600">
-                              ✓ Screenshot uploaded successfully
+                     )}
+                     <Dialog open={isSubmitDialogOpen} onOpenChange={setIsSubmitDialogOpen}>
+                       <DialogTrigger asChild>
+                         <Button
+                           onClick={() => setSelectedTask(task)}
+                           className="flex-1"
+                         >
+                           {task.status === "rejected" ? "Start Task Again" : "Start Task"}
+                         </Button>
+                       </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Submit Task Completion</DialogTitle>
+                            <DialogDescription>
+                              Upload a screenshot as proof and add any notes about your completion.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                              <Label htmlFor="screenshot">Screenshot Proof</Label>
+                              <div className="flex items-center space-x-2">
+                                <Input
+                                  id="screenshot"
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) {
+                                      handleScreenshotUpload(file)
+                                    }
+                                  }}
+                                  disabled={uploadingScreenshot}
+                                />
+                                {uploadingScreenshot && (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                )}
+                              </div>
+                              {submitForm.screenshotUrl && (
+                                <div className="text-sm text-green-600">
+                                  ✓ Screenshot uploaded successfully
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
 
-                        <div className="grid gap-2">
-                          <Label htmlFor="notes">Notes (Optional)</Label>
-                          <Textarea
-                            id="notes"
-                            placeholder="Add any additional notes about your task completion..."
-                            value={submitForm.notes}
-                            onChange={(e) => setSubmitForm(prev => ({ ...prev, notes: e.target.value }))}
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button
-                          onClick={handleTaskSubmission}
-                          disabled={!submitForm.screenshotUrl || submittingTask === selectedTask?.id}
-                        >
-                          {submittingTask === selectedTask?.id ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Submitting...
-                            </>
-                          ) : (
-                            'Submit Task'
-                          )}
-                  </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
+                            <div className="grid gap-2">
+                              <Label htmlFor="notes">Notes (Optional)</Label>
+                              <Textarea
+                                id="notes"
+                                placeholder="Add any additional notes about your task completion..."
+                                value={submitForm.notes}
+                                onChange={(e) => setSubmitForm(prev => ({ ...prev, notes: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              onClick={handleTaskSubmission}
+                              disabled={!submitForm.screenshotUrl || submittingTask === selectedTask?.id}
+                            >
+                              {submittingTask === selectedTask?.id ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Submitting...
+                                </>
+                              ) : (
+                                'Submit Task'
+                              )}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                   </>
+                 )}
                 {task.status === "pending" && (
                   <Button variant="outline" className="flex-1" disabled>
                     Pending Review

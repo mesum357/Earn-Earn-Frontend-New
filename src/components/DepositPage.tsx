@@ -217,7 +217,7 @@ export function DepositPage() {
               <CreditCard className="h-5 w-5 mr-2" />
               Make a Deposit
             </CardTitle>
-            <CardDescription>Minimum deposit: ${minDeposit} | Only Binance transfers accepted</CardDescription>
+            <CardDescription>Only Binance transfers accepted | Contact: easyeanses@gmail.com</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -232,7 +232,7 @@ export function DepositPage() {
                 step="0.01"
               />
               <p className="text-sm text-gray-600">
-                Minimum: ${minDeposit} | Current Balance: ${user?.balance || 0} | Tasks Unlocked: {user?.hasDeposited ? 'Yes' : 'No'}
+                Current Balance: ${user?.balance || 0} | Tasks Unlocked: {user?.hasDeposited ? 'Yes' : 'No'}
                 {!user?.hasDeposited && (
                   <span className="block text-orange-600 font-medium mt-1">
                     ⚠️ First $10 deposit unlocks tasks but doesn't add to balance
@@ -326,11 +326,11 @@ export function DepositPage() {
                   <p className="font-medium mb-1">Important Instructions:</p>
                   <ul className="list-disc list-inside space-y-1">
                     <li>Only send USDT (TRC-20) to this address</li>
-                    <li>Minimum deposit: ${minDeposit}</li>
                     <li><strong>First $10 deposit unlocks tasks but doesn't add to balance</strong></li>
                     <li>Subsequent deposits add to your balance normally</li>
                     <li>Deposits are processed within 10-30 minutes</li>
                     <li>Double-check the address before sending</li>
+                    <li>Contact support: easyeanses@gmail.com</li>
                   </ul>
                 </div>
               </div>
