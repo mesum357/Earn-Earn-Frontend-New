@@ -42,7 +42,7 @@ export function WithdrawPage() {
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([])
   const [withdrawalsLoading, setWithdrawalsLoading] = useState(true)
 
-  const minWithdraw = 20
+  const minWithdraw = 1
 
   // Fetch withdrawal requirements
   const fetchRequirements = async () => {
