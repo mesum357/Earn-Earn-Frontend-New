@@ -74,16 +74,16 @@ export function TaskPage() {
     }
   }, [refreshUser])
 
-  // Handle screenshot upload
+  // Handle screenshot upload using dedicated Cloudinary endpoint
   const handleScreenshotUpload = async (file: File) => {
     try {
       setUploadingScreenshot(true)
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('screenshot', file) // Changed from 'file' to 'screenshot'
       const apiUrl = import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'
 
       const response = await axios.post(
-        `${apiUrl}/api/upload-screenshot`,
+        `${apiUrl}/api/upload-task-screenshot`, // Using dedicated endpoint
         formData,
         {
           withCredentials: true,
@@ -95,10 +95,12 @@ export function TaskPage() {
 
       if (response.data.url) {
         setSubmitForm(prev => ({ ...prev, screenshotUrl: response.data.url }))
+        console.log('Task screenshot uploaded to Cloudinary:', response.data.url)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading screenshot:', error)
-      alert('Failed to upload screenshot. Please try again.')
+      const errorMessage = error.response?.data?.error || 'Failed to upload screenshot. Please try again.'
+      alert(errorMessage)
     } finally {
       setUploadingScreenshot(false)
     }

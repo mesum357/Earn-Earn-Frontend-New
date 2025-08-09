@@ -97,24 +97,26 @@ export function DepositPage() {
 
   const uploadImageToServer = async (file: File): Promise<string> => {
     const formData = new FormData()
-    formData.append('image', file)
+    formData.append('receipt', file) // Changed from 'file' to 'receipt'
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/upload-image`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/upload-deposit-receipt`, { // Using dedicated endpoint
         method: 'POST',
         body: formData,
         credentials: 'include'
       })
       
       if (!response.ok) {
-        throw new Error('Failed to upload image')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to upload receipt')
       }
       
       const data = await response.json()
+      console.log('Deposit receipt uploaded to Cloudinary:', data.url)
       return data.url
-    } catch (error) {
-      console.error('Image upload error:', error)
-      throw new Error('Failed to upload image to server')
+    } catch (error: any) {
+      console.error('Receipt upload error:', error)
+      throw new Error(error.message || 'Failed to upload receipt to Cloudinary')
     }
   }
 

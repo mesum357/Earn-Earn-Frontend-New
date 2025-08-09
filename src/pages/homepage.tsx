@@ -174,23 +174,29 @@ const Dashboard = () => {
     setSelectedPrize(prize);
   };
 
-  // Handle file upload for Participate Now
+  // Handle file upload for Participate Now using dedicated Cloudinary endpoint
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setReceipt(e.target.files[0]);
       setIsUploadingEntry(true);
       const formData = new FormData();
-      formData.append('file', e.target.files[0]);
+      formData.append('entry', e.target.files[0]); // Changed from 'file' to 'entry'
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/upload`,
+          `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/upload-homepage-entry`, // Using dedicated endpoint
           formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
+          { 
+            headers: { 'Content-Type': 'multipart/form-data' },
+            withCredentials: true // Added authentication
+          }
         );
         setEntryUploadUrl(response.data.url);
-        toast({ title: 'Receipt uploaded!', description: 'File uploaded successfully.' });
-      } catch (error) {
-        toast({ title: 'Upload failed', description: 'Could not upload file.', variant: 'destructive' });
+        console.log('Homepage entry uploaded to Cloudinary:', response.data.url);
+        toast({ title: 'Entry uploaded!', description: 'File uploaded successfully to Cloudinary.' });
+      } catch (error: any) {
+        console.error('Homepage entry upload error:', error);
+        const errorMessage = error.response?.data?.error || 'Could not upload file. Please try again.';
+        toast({ title: 'Upload failed', description: errorMessage, variant: 'destructive' });
         setEntryUploadUrl(null);
       } finally {
         setIsUploadingEntry(false);
