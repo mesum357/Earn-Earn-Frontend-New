@@ -327,21 +327,7 @@ const VerifyEmail = () => {
                         </p>
                       </div>
 
-                      <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-6">
-                        <div className="flex items-center space-x-3 mb-4">
-                          <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                            <CheckCircle className="h-5 w-5 text-yellow-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-yellow-900">Referral Bonus</h3>
-                            <p className="text-yellow-700 text-sm">Earn rewards for referrals</p>
-                          </div>
-                        </div>
-                        <p className="text-yellow-800 text-sm">
-                          If you signed up with a referral link, the $5 bonus will be given to your referrer 
-                          once you verify your email.
-                        </p>
-                      </div>
+                      
                     </>
                   )}
                 </div>

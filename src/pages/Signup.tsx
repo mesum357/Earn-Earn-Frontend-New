@@ -298,9 +298,6 @@ const Signup = () => {
                 {referrerName && (
                   <div className="text-sm text-green-600 space-y-1">
                     <p>✓ Valid referral code! You'll be referred by {referrerName}</p>
-                    <p className="text-xs text-gray-600">
-                      💡 Referral bonus of $5 will be given to {referrerName} after you verify your email
-                    </p>
                   </div>
                 )}
                 {referralCode && !referrerName && !isValidatingCode && (

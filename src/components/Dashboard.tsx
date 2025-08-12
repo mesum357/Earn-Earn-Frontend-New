@@ -89,7 +89,7 @@ export function Dashboard() {
     },
     {
       title: "Refer Friends",
-      description: "Earn from referrals",
+      description: "Invite friends to join",
       icon: Users,
       link: "/refer",
       color: "bg-purple-500",
@@ -221,18 +221,7 @@ export function Dashboard() {
                   </div>
                   <Badge variant="secondary">+$2.50</Badge>
                 </div>
-                <div className="flex items-center justify-between py-3 border-b">
-                  <div className="flex items-center">
-                    <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                      <Users className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Referral Bonus</p>
-                      <p className="text-sm text-gray-600">Friend joined via your link</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">+$5.00</Badge>
-                </div>
+                
                 <div className="flex items-center justify-between py-3">
                   <div className="flex items-center">
                     <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
