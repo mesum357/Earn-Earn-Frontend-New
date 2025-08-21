@@ -208,11 +208,12 @@ const Dashboard = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      // Use the new lucky draw participation endpoint
+      // Use the new lucky draw participation endpoint with receipt image
       await axios.post(
         `${import.meta.env.VITE_API_URL || 'https://easyearn-backend-production-01ac.up.railway.app'}/api/lucky-draws/${selectedPrize?.id}/participate`,
         {
-          walletAddress: binanceUID // Using binanceUID as wallet address for now
+          walletAddress: binanceUID, // Using binanceUID as wallet address for now
+          receiptUrl: entryUploadUrl // Include the uploaded receipt image URL
         },
         { withCredentials: true }
       );
@@ -230,6 +231,7 @@ const Dashboard = () => {
       setSelectedPrize(null);
       setBinanceUID(exampleBinanceUID);
       setReceipt(null);
+      setEntryUploadUrl(null);
     }
   };
 
