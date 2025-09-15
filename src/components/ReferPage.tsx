@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/contexts/AuthContext"
-import { Users, Copy, CheckCircle, Share2, UserPlus, TrendingUp } from "lucide-react"
+import { Users, Copy, CheckCircle, Share2, UserPlus, TrendingUp, DollarSign, Gift } from "lucide-react"
 import api from "@/lib/axios"
 
 export function ReferPage() {
@@ -88,6 +88,18 @@ export function ReferPage() {
       icon: TrendingUp,
       color: "text-purple-600",
     },
+    {
+      title: "Total Bonus Earned",
+      value: `$${((referralStats?.totalReferrals || 0) * 1.5).toFixed(2)}`,
+      icon: DollarSign,
+      color: "text-green-600",
+    },
+    {
+      title: "Per Referral Bonus",
+      value: "$1.50",
+      icon: Gift,
+      color: "text-orange-600",
+    },
   ]
 
   const recentReferrals = referralData?.recentReferrals || []
@@ -100,9 +112,9 @@ export function ReferPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {loading ? (
-          Array.from({ length: 2 }).map((_, index) => (
+          Array.from({ length: 4 }).map((_, index) => (
             <Card key={index}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -140,6 +152,9 @@ export function ReferPage() {
         <p className="text-sm text-blue-800">
           <strong>Note:</strong> Total referrals and monthly counts include only confirmed referrals 
           (users who have made their first $10 deposit and had it confirmed by admin).
+        </p>
+        <p className="text-sm text-blue-800 mt-2">
+          <strong>Bonus:</strong> You earn $1.50 for each successful referral when your referred user completes their first $10 deposit.
         </p>
       </div>
 
@@ -218,6 +233,11 @@ export function ReferPage() {
                     <p className="text-xs text-gray-500 mt-1">
                       {referral.referred?.hasDeposited ? "$10 deposit confirmed" : "Waiting for $10 deposit"}
                     </p>
+                    {referral.referred?.hasDeposited === true && (
+                      <p className="text-xs text-green-600 mt-1 font-medium">
+                        +$1.50 bonus earned!
+                      </p>
+                    )}
                     {referral.referred?.hasDeposited === false && (
                       <p className="text-xs text-orange-500 mt-1">
                         Hasn't made first deposit yet
